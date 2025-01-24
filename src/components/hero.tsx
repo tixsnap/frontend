@@ -33,7 +33,10 @@ const HeroSection: React.FC = () => {
           </p>
 
           <div className="flex gap-4">
-            <button className="px-6 py-3 bg-red-500 text-white text-lg font-bold rounded-3xl hover:bg-teal-400 transition-transform: duration-200 hover:scale-110">
+            <button
+              className="px-6 py-3 text-white text-lg font-bold rounded-3xl hover:bg-teal-400 transition-transform: duration-200 hover:scale-110"
+              style={{ backgroundColor: "#FF2E63" }}
+            >
               Get Tickets
             </button>
             <button className="px-6 py-3 border-2 border-gray-300 text-white rounded-3xl transition-transform: duration-200 hover:scale-110">
