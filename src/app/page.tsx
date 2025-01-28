@@ -4,8 +4,13 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { toast } from "react-toastify";
+import Navbar from "@/components/navbar";
+import HeroSection from "@/components/hero";
+import EventSearch from "@/components/event-search";
+import EventList from "@/components/event-list";
 
 export default function Home() {
+
   const { data: session, status }: { data: any; status: string } = useSession();
   const router = useRouter();
 
@@ -19,6 +24,10 @@ export default function Home() {
   if (status === "loading") {
     return <div>Loading...</div>;
   } else {
-    return <div>User page</div>;
-  }
-}
+    return <div>
+    <Navbar />
+    <HeroSection />
+    <EventSearch />
+    <EventList />
+  </div>;
+}}
