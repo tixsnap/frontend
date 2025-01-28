@@ -4,17 +4,20 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Input from "@/components/atom/Input";
 import ButtonAuth from "@/components/atom/ButtonAuth";
+import Link from "next/link";
+import Popup from "@/components/Popup";
+
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useFormik } from "formik";
 import { userSchemaLogin } from "@/app/interfaces/user.schema";
 import { FormField } from "@/components/atom/FormField";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import Popup from "@/components/Popup";
+import { signIn } from "next-auth/react";
 
 export default function page() {
   const [isHidden, setIsHidden] = useState<Boolean>(true);
+  // const [isLoggedIn, setIsLoggedIn] = useState<Boolean>(false)
 
   const handleIsHidden = () => {
     setIsHidden(!isHidden);
@@ -22,18 +25,44 @@ export default function page() {
 
   const router = useRouter();
 
+  const handleSubmit = async (values: { email: string; password: string }) => {
+    try {
+      const res = await signIn("credentials", {
+        email: values.email,
+        password: values.password,
+        redirect: false,
+      });
+
+      if (res?.error) {
+        // Handle specific error
+        if (res.error === "Email or Password is wrong !") {
+          formik.setFieldError("password", "Email or Password is wrong");
+        }
+        toast.error(res.error);
+        return;
+      }
+
+      formik.resetForm();
+      toast.success("Login successfully !");
+      setTimeout(() => {
+        router.push("/organizer");
+        router.refresh();
+      }, 2000);
+    } catch (error: any) {
+      const errorMessage = error.response.data.message;
+      if (errorMessage === "Email or Password is wrong !") {
+        formik.setFieldError("password", "Email or Password is wrong");
+      }
+    }
+  };
+
   const formik = useFormik({
     initialValues: {
       email: "",
       password: "",
     },
-    onSubmit: (values) => {
-      console.log(JSON.stringify(values, null, 2));
-      formik.resetForm();
-      toast("Login successfully !");
-      setTimeout(() => {
-        router.push("/organizer");
-      }, 3000);
+    onSubmit: async (values) => {
+      await handleSubmit(values);
     },
     validateOnMount: true,
     validateOnChange: true,
@@ -47,11 +76,16 @@ export default function page() {
         <div className="bg-white h-screen items-center justify-center flex flex-col gap-1">
           <Image
             alt="logo"
-            src={"/tixsnap_logo.webp"}
-            width={100}
-            height={100}
-            className="bg-transparent"
-            objectFit="contain"
+            src="/tixsnap_logo.webp"
+            width={200}
+            height={50}
+            priority={true}
+            className="bg-transparent object-contain w-[200px] h-[50px]"
+            style={{
+              width: "200px",
+              height: "50px",
+              objectFit: "contain",
+            }}
           />
           <h1 className="text-xl">Login to your account</h1>
           <form

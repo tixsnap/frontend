@@ -13,6 +13,7 @@ import { userSchemaRegister } from "@/app/interfaces/user.schema";
 import { FormField } from "@/components/atom/FormField";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import axiosInstance from "@/app/utils/axios.helper";
 
 export default function page() {
   const [isHidden, setIsHidden] = useState<Boolean>(true);
@@ -24,20 +25,42 @@ export default function page() {
 
   const formik = useFormik({
     initialValues: {
-      username: "",
+      name: "",
       email: "",
       password: "",
       confirmPassword: "",
       referral: "",
       role: "CUSTOMER",
     },
-    onSubmit: (values) => {
-      console.log(JSON.stringify(values, null, 2));
-      formik.resetForm();
-      toast("Registered Successfully");
-      setTimeout(() => {
-        router.push("/auth/login");
-      }, 3000);
+    onSubmit: async (values) => {
+      try {
+        const requestData = {
+          ...values,
+          referral: values.referral || undefined,
+        };
+        const res = await axiosInstance.post(
+          "/auth/register",
+          requestData
+        );
+
+        formik.resetForm();
+        toast("Registration successful! Please check your email for verification link.");
+        setTimeout(() => {
+          router.push("/auth/login");
+        }, 3000);
+      } catch (error: any) {
+        const errorMessage = error.response.data.message;
+      
+        if (errorMessage === "Referral code is not found !!!") {
+          formik.setFieldError('referral', 'Referral code not found');
+        } 
+        else if (errorMessage === "Email has been registered !") {
+          formik.setFieldError('email', 'Email has already been registered');
+        }
+        else {
+          toast.error(errorMessage || "Registration failed");
+        }
+      }
     },
     validateOnMount: true,
     validateOnChange: true,
@@ -51,11 +74,16 @@ export default function page() {
         <div className="bg-white h-screen items-center justify-center flex flex-col gap-1">
           <Image
             alt="logo"
-            src={"/tixsnap_logo.webp"}
-            width={100}
-            height={100}
-            className="bg-transparent"
-            objectFit="contain"
+            src="/tixsnap_logo.webp"
+            width={200}
+            height={50}
+            priority={true}
+            className="bg-transparent object-contain w-[200px] h-[50px]"
+            style={{
+              width: "200px",
+              height: "50px",
+              objectFit: "contain",
+            }}
           />
           <h1 className="text-xl">Welcome to Tixsnap</h1>
           <p className="text-xs font-bold mt-5 flex gap-2 items-center">
@@ -79,13 +107,13 @@ export default function page() {
             onSubmit={formik.handleSubmit}
           >
             <FormField
-              placeholder="username"
-              name="username"
-              value={formik.values.username}
+              placeholder="name"
+              name="name"
+              value={formik.values.name}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.errors.username}
-              touched={formik.touched.username}
+              error={formik.errors.name}
+              touched={formik.touched.name}
             />
 
             <FormField
