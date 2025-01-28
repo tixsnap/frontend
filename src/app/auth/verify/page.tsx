@@ -1,28 +1,40 @@
-import React from "react";
-import * as motion from "motion/react-client";
-import { FaCheck } from "react-icons/fa";
+"use client";
+
+import React, { useEffect, useState } from "react";
+import axiosInstance from "@/app/utils/axios.helper";
+import { useRouter, useSearchParams } from "next/navigation";
+import SuccessVerify from "@/components/SuccessVerify";
+import FailedVerify from "@/components/FailedVerify";
+import { toast } from "react-toastify";
+import Popup from "@/components/Popup";
 
 export default function page() {
+  const [isVerified, setIsverified] = useState<boolean>(false);
+  const params = useSearchParams();
+  const router = useRouter();
+  const token = params.get("token");
+
+  const verifyAccount = async () => {
+    try {
+      const res = await axiosInstance.post(`/auth/verify/${token}`);
+      if (res.status == 200) setIsverified(!isVerified);
+      toast.success("Redirecting to login page");
+      setTimeout(() => {
+        router.push("/auth/login");
+      }, 2000);
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    verifyAccount();
+  }, []);
+
   return (
-    <div className="h-screen w-full items-center justify-center flex">
-      <motion.div
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{
-          duration: 0.4,
-          scale: { type: "spring", visualDuration: 0.4, bounce: 0.5 },
-        }}
-        className="text-5xl font-bold text-green-600"
-      >
-        <div className="flex gap-5 items-center underline">
-          You are verified successfully !{" "}
-          <FaCheck
-            size={36}
-            color="white"
-            className="rounded-full bg-green-600 p-1"
-          />
-        </div>
-      </motion.div>
+    <div>
+      <Popup />
+      {isVerified ? <SuccessVerify /> : <FailedVerify />}
     </div>
   );
 }
