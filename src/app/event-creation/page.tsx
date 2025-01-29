@@ -37,6 +37,7 @@ const EventCreationPage = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // handle form submission
+    // TODO: continue to API
     console.log({ ...eventDetails, voucher });
   };
 
