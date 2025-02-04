@@ -1,4 +1,8 @@
-import React, { DOMAttributes, HtmlHTMLAttributes, HTMLInputTypeAttribute } from "react";
+import React, {
+  DOMAttributes,
+  HtmlHTMLAttributes,
+  HTMLInputTypeAttribute,
+} from "react";
 
 export interface IFormAuth {
   type?: HTMLInputTypeAttribute;
@@ -6,6 +10,7 @@ export interface IFormAuth {
   value?: string;
   classname?: string;
   placeholder?: string;
+  disabled?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 }
@@ -17,7 +22,8 @@ export default function Input({
   type = "text",
   value,
   onChange,
-  onBlur
+  onBlur,
+  disabled = false,
 }: IFormAuth) {
   return (
     <input
@@ -28,6 +34,7 @@ export default function Input({
       placeholder={placeholder}
       onChange={onChange}
       onBlur={onBlur}
+      disabled={disabled}
     />
   );
 }

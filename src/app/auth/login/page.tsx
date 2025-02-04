@@ -34,11 +34,10 @@ export default function page() {
       });
 
       if (res?.error) {
-        // Handle specific error
-        if (res.error === "Email or Password is wrong !") {
+        if (res.error === "Configuration") {
           formik.setFieldError("password", "Email or Password is wrong");
         }
-        toast.error(res.error);
+        toast.error("Email or Password is wrong");
         return;
       }
 
