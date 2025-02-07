@@ -8,6 +8,7 @@ const EventCreationPage = () => {
     startDate: "",
     endDate: "",
     seats: "",
+    location: "",
     ticketType: "paid",
     price: "",
   });
@@ -131,6 +132,19 @@ const EventCreationPage = () => {
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded-md"
                 min="1"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">
+                Location
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={eventDetails.name}
+                onChange={handleInputChange}
+                className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 required
               />
             </div>
