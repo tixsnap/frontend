@@ -1,16 +1,7 @@
 import React from "react";
 import Image from "next/image";
-
-interface EventDetailPageProps {
-  eventName: string;
-  isPaidEvent: boolean;
-  imageUrl: string;
-  description: string;
-  startDate: string; // change to date later
-  endDate: string;
-  availableSeats: number;
-  price?: number; // optional for free event
-}
+import { useNavigate } from "react-router-dom";
+import { EventDetailPageProps } from "../interfaces/eventDetail.schema";
 
 const EventDetailPage: React.FC<EventDetailPageProps> = ({
   eventName,
@@ -31,6 +22,8 @@ const EventDetailPage: React.FC<EventDetailPageProps> = ({
       day: "numeric",
     });
   };
+
+  const navigate = useNavigate();
 
   return (
     <div
@@ -115,6 +108,16 @@ const EventDetailPage: React.FC<EventDetailPageProps> = ({
         <button
           className="px-6 py-3 text-white text-xl font-bold rounded-3xl transition-transform: duration-200 hover:scale-110"
           style={{ backgroundColor: "#FF2E63" }}
+          onClick={() =>
+            navigate("/checkout", {
+              state: {
+                eventId: "your-event-id-here", // TODO: pass event id
+                originalPrice: price,
+                maxPoints: userPoints, // TODO: import user points
+                availableSeats: availableSeats,
+              },
+            })
+          }
         >
           Get Event Ticket
         </button>
