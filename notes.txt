@@ -1,0 +1,4 @@
+// Gatot Notes
+
+1. after reset password, delete cookies
+3. dashboard

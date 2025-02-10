@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
   }
   
   // Allow login and register routes
-  if (pathname.startsWith("/auth/login") || pathname.startsWith("/auth/register")) {
+  if (pathname.startsWith("/auth/login") || pathname.startsWith("/auth/register") || pathname.startsWith("/auth/forgot-password") || pathname.startsWith("/auth/reset-password")) {
     return NextResponse.next();
   }
   

@@ -127,6 +127,13 @@ export default function page() {
                 {formik.errors.password}
               </span>
             )}
+
+            <Link href="/auth/forgot-password">
+              <p className="underline text-blue-600 font-bold text-xs cursor-pointer text-end">
+                Forgot password?
+              </p>
+            </Link>
+
             <ButtonAuth
               text="Login"
               classname="bg-blue-400 hover:bg-blue-500 text-white disabled:bg-blue-200 disabled:cursor-not-allowed"
