@@ -183,7 +183,7 @@ export default function page() {
               type="button"
               className="h-[40px] px-8 rounded-xl border items-center gap-2 text-sm bg-gray-300 text-white hover:bg-gray-600"
             >
-              Forgot Password
+              Reset Password
             </button>
           </div>
         </form>
