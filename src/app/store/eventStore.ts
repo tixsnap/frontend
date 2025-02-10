@@ -1,0 +1,98 @@
+import {create} from "zustand"
+import { IEvents } from "../interfaces/event.interface"
+import axiosInstance from "../utils/axios.helper"
+import { IAttendees } from "../interfaces/attendee.interface"
+import { ITransaction } from "../interfaces/tx.interface"
+
+interface EventStore {
+    events: IEvents[] | []
+    attendees: IAttendees[] | []
+    transactions: ITransaction[] | []
+    totalTicketSold: number
+    totalAttendee: number
+    totalTransaction: number
+    loading: boolean
+    event: IEvents | null
+    getEvents: () => Promise<void>
+    getEventBySlug: (slug: string) => Promise<void>
+    getAttendeeListByParams: (slug: string) => Promise<void>
+    getTransactions: () => Promise<void>
+    calculateTotals: () => void
+}
+
+export const useEventStore = create<EventStore>((set, get) => ({
+    events: [],
+    attendees: [],
+    transactions: [],
+    event: null,
+    totalTicketSold: 0,
+    totalAttendee: 0,
+    loading: false,
+    totalTransaction: 0,
+
+    getEvents: async() => {
+        set({loading: true})
+        try {
+
+            const res = await axiosInstance.get("/organizer/events")
+            set({events: res.data.data})
+            get().calculateTotals()
+            
+        } catch (error) {
+            console.log(error)
+        }finally{
+            set({loading:false})
+        }
+    },
+
+    getEventBySlug: async(slug) => {
+        set({loading: true})
+        try{
+            const res = await axiosInstance.get(`/organizer/events/${slug}`);
+            set({event: res.data.data})
+        } catch (error) {
+            console.log(error)
+            set({event: null})
+        } finally {
+            set({loading: false})
+        }
+    },
+
+    getAttendeeListByParams: async(slug: string) => {
+        set({loading: true})
+        try{
+            const res = await axiosInstance.get("/organizer/events/attendee", {
+                params: {
+                  event: slug,
+                },
+              });
+            set({attendees: res.data.data})
+        } catch (error) {
+            console.log(error)
+            set({attendees: []})
+        } finally {
+            set({loading: false})
+        }
+    },
+
+    getTransactions: async() => {
+        try {
+
+            const res = await axiosInstance.get("/tx");
+            set({transactions: res.data.data})
+        
+        } catch (error) {
+            console.log(error)
+            set({transactions: []})
+        }
+    },
+
+    calculateTotals: ()=> {
+        const events = get().events
+        const transactions = get().transactions
+        const totalTx = transactions.length 
+        const totalSold = events.reduce((sum, curr) => Number(sum) + Number(curr.ticketSold), 0)
+        const totalAttendee = events.reduce((sum, curr) => Number(sum) + Number(curr.totalAttendee), 0)
+        set({ totalTicketSold: totalSold, totalAttendee: totalAttendee, totalTransaction: totalTx })
+    }
+}))

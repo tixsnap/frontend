@@ -1,24 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
-
 import { IoIosNotificationsOutline } from "react-icons/io";
-import { getSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { Sidebar } from "@/app/constant/sidebar";
-import { User } from "next-auth";
+import { useUserStore } from "@/app/store/userStore";
 
 export default function TopBar() {
-  const [user, setUser] = useState<User>();
-  const getUserSession = async () => {
-    try {
-      const user = await getSession();
-      setUser(user?.user);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const {user, getUserSession} = useUserStore()
 
   const [headerText, setHeaderText] = useState<string>("");
   const pathname = usePathname();
@@ -27,6 +16,8 @@ export default function TopBar() {
     getUserSession();
     if (pathname.includes("profile")) {
       setHeaderText("My Profile");
+    } else if(pathname.includes("event")) {
+      setHeaderText("Event");
     } else {
       const matchedItem = Sidebar.find((el) => pathname === el.href);
       setHeaderText(matchedItem ? matchedItem.text : "Dashboard");
@@ -43,9 +34,8 @@ export default function TopBar() {
           <div className="flex gap-3 items-center">
             <IoIosNotificationsOutline size={28} color="black" />
           </div>
-          <Link
-            className="flex items-center gap-1 hover:cursor-pointer"
-            href={"/profile/samika"}
+          <div
+            className="flex items-center gap-1"
           >
             {/* <Image
               alt="user-image"
@@ -58,7 +48,7 @@ export default function TopBar() {
               <p className="text-sm font-bold">{user?.name}</p>
               <p className="text-xs italic underline">{user?.role}</p>
             </div>
-          </Link>
+          </div>
         </div>
       </div>
     </div>

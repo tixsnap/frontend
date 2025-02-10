@@ -13,7 +13,11 @@ export default function DashboardSidebar() {
   useEffect(() => {
     if (pathname.includes("profile")) {
       setIsActive("My Profile");
-    } else {
+    } else if(pathname.includes("attendee")){
+      setIsActive("Attedee List")
+    } else if(pathname.includes("event")) {
+      setIsActive("Event")
+    }else {
       const matchedItem = Sidebar.find((el) => pathname === el.href);
       setIsActive(matchedItem ? matchedItem.text : "Dashboard");
     }
@@ -23,7 +27,7 @@ export default function DashboardSidebar() {
     <div className="w-[210px] bg-gray-200 h-screen text-sm fixed top-0 left-0 rounded-xl">
       <div className="flex justify-center flex-col">
         <div className="bg-blue-500 text-white flex justify-center items-center mb-5 py-[26px] font-bold text-base mx-auto w-full">
-          <p className="text-center">Hello, Ijsamika</p>
+          <p className="text-center">TIXSNAP</p>
         </div>
 
         <div className="flex flex-col gap-1">
