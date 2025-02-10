@@ -3,7 +3,7 @@ import { User, CheckCircle, XCircle, Clock } from "lucide-react";
 import Image from "next/image";
 
 const UserProfile = () => {
-  // TODO: ganti dengan prisma
+  // TODO: ganti data dummy dengan prisma
   const user = {
     id: 1,
     firstName: "John",
