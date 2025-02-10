@@ -18,12 +18,17 @@ export default function page() {
   const params = useSearchParams();
   const token = params.get("token");
 
+  const deleteAuthCookie = () => {
+    document.cookie = "authjs.session-token";
+  };
+
   const handleSubmit = async (values: any) => {
     try {
       await axiosInstance.post(`/auth/reset-password/${token}`, {
         password: values.password,
       });
       toast.success("Success, Redirect to login");
+      deleteAuthCookie()
       setTimeout(() => {
         router.push("/auth/login");
       }, 2000);

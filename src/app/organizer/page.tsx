@@ -1,46 +1,57 @@
 "use client";
 
-import { IEvents } from "@/app/interfaces/event.interface";
-import axiosInstance from "@/app/utils/axios.helper";
 import EventChart from "@/components/event/Chart";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { useUserStore } from "../store/userStore";
+import { useEventStore } from "../store/eventStore";
 
 export default function Page() {
-  const [event, setEvents] = useState<IEvents[]>([]);
-  const getEvents = async () => {
-    try {
-      const res = await axiosInstance.get("/organizer/events");
-      setEvents(res.data.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const {user, getUserSession} = useUserStore()
+  const {events, getEvents, calculateTotals, totalTransaction, getTransactions, totalAttendee, totalTicketSold} = useEventStore()
 
   useEffect(() => {
+    getUserSession()
     getEvents();
+    const fetchTransactions = async () => {
+      await getTransactions(); 
+      calculateTotals(); 
+  };
+  fetchTransactions();
   }, []);
 
   return (
     <div className="ml-[210px] p-6 w-[calc(100%-210px)] min-h-screen bg-gray-50">
       <div className="p-5 w-full min-h-screen flex flex-col gap-5">
-        <h1 className="text-2xl font-bold">Welcome Back, ijsamika</h1>
-        <div className="grid grid-cols-3 gap-5 h-[150px]">
+        <h1 className="text-2xl font-bold">Welcome Back, {user?.name}</h1>
+        <div className="grid grid-cols-4 gap-5 h-[150px]">
           <div className="border bg-gray-50 rounded-lg p-5 shadow-md">
-            <p className="text-start">Total Events</p>
+            <p className="text-start">Events</p>
             <p className="text-7xl text-black font-bold text-center font-serif">
-              {event.length > 0 ? event.length : 0}
+              {events.length > 0 ? events.length : 0}
             </p>
           </div>
           <div className="border bg-gray-50 rounded-lg p-5 shadow-md">
-            <p className="text-start">Total Ticket Sold</p>
+            <p className="text-start">Ticket Sold</p>
             <p className="text-7xl text-black font-bold text-center font-serif">
-              55
+              {
+                totalTicketSold
+              }
             </p>
           </div>
           <div className="border bg-gray-50 rounded-lg p-5 shadow-md">
-            <p className="text-start">Total Attendee</p>
+            <p className="text-start">Transactions</p>
             <p className="text-7xl text-black font-bold text-center font-serif">
-              55
+              {
+                totalTransaction
+              }
+            </p>
+          </div>
+          <div className="border bg-gray-50 rounded-lg p-5 shadow-md">
+            <p className="text-start">Attendees</p>
+            <p className="text-7xl text-black font-bold text-center font-serif">
+              {
+                totalAttendee
+              }
             </p>
           </div>
         </div>
