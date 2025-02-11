@@ -3,4 +3,6 @@ export interface IProfile {
   firstName?: string;
   lastName?: string;
   profilePicture?: string | undefined;
+  createdAt?: string;
+  updatedAt?: string;
 }
