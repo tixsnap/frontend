@@ -165,7 +165,12 @@ export default function page() {
                 placeholder={user?.referral || ''}
                 classname="referral"
               />
-              <IoCopyOutline className="hover:cursor-pointer" />
+              <IoCopyOutline className="hover:cursor-pointer" 
+                onClick={() => {
+                  navigator.clipboard.writeText(user?.referral || "");
+                  toast.success("Referral code copied!");
+                }}
+              />
             </div>
           </div>
 

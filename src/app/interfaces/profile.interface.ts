@@ -5,4 +5,9 @@ export interface IProfile {
   profilePicture?: string | undefined;
   createdAt?: string;
   updatedAt?: string;
+  user : {
+    point: {
+      totalPoint?: string
+    }
+  }
 }
