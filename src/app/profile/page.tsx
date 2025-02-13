@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useEffect } from "react";
 import { User, CheckCircle, XCircle, Clock } from "lucide-react";
@@ -48,69 +48,70 @@ const UserProfile = () => {
 
   // GATOT
   // Handle profile
-  const {getUserProfile, profile, user: userLogged, getUserSession} = useUserStore()
-  
-  useEffect(()=> {
-    getUserProfile()
-    getUserSession()
-  }, [])
+  const {
+    getUserProfile,
+    profile,
+    user: userLogged,
+    getUserSession,
+  } = useUserStore();
 
-  useEffect(()=> {
-    if(profile){
+  useEffect(() => {
+    getUserProfile();
+    getUserSession();
+  }, []);
+
+  useEffect(() => {
+    if (profile) {
       formik.setValues({
         name: formik.values.name || "",
         first_name: profile.firstName || "",
         last_name: profile.lastName || "",
-        profile_picture: profile.profilePicture || ""
-      })
+        profile_picture: profile.profilePicture || "",
+      });
     }
-  }, [profile])
+  }, [profile]);
 
   const formik = useFormik({
     initialValues: {
       name: "",
       first_name: "",
       last_name: "",
-      profile_picture: ""
+      profile_picture: "",
     },
     onSubmit: async (values) => {
       await axiosInstance.post("/profile", {
         first_name: values.first_name,
-        last_name: values.last_name
-      })
+        last_name: values.last_name,
+      });
 
-      toast.success("Profile Updated")
-      
-    }
-  })
-  
+      toast.success("Profile Updated");
+    },
+  });
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    
     if (e.target.files?.length) {
       const image: File = e.target.files[0];
       formik.setFieldValue("image", image);
       const form = new FormData();
       form.append("image", image);
-      
+
       try {
-        await axiosInstance.post('/profile/avatar', form, {
+        await axiosInstance.post("/profile/avatar", form, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        })
-        
-        toast.success("Profile Updated")
+        });
+
+        toast.success("Profile Updated");
         setTimeout(() => {
           window.location.reload();
-        }, 1000); // 
-        
+        }, 1000); //
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-    
     }
-  }
-  
+  };
+
   const handleForgotPassword = async () => {
     try {
       const res = await axiosInstance.post(`/auth/forgot-password`, {
@@ -127,7 +128,7 @@ const UserProfile = () => {
       <div className="max-w-4xl mx-auto px-4">
         {/* Profile Header */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <Popup/>
+          <Popup />
           <div className="flex flex-col items-center">
             {profile?.profilePicture ? (
               <Image
@@ -146,92 +147,109 @@ const UserProfile = () => {
             <label className="hover:cursor-pointer h-[30px] px-3 rounded-xl border flex items-center gap-2 text-sm bg-blue-400 text-white hover:bg-blue-500 hover:text-white">
               <CiImageOn />
               Change
-              <input type="file" accept="image/png, image/gif, image/jpeg" className="hidden" onChange={handleFileChange}/>
+              <input
+                type="file"
+                accept="image/png, image/gif, image/jpeg"
+                className="hidden"
+                onChange={handleFileChange}
+              />
             </label>
             <h1 className="text-2xl font-bold text-gray-900">
               {profile?.firstName} {profile?.lastName}
             </h1>
             <div className="mt-2">
               <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
-                {(profile?.user.point.totalPoint? profile?.user.point.totalPoint : 0).toLocaleString('id-ID')} Points
+                {profile?.user?.point?.totalPoint
+                  ? profile.user.point.totalPoint.toLocaleString("id-ID")
+                  : 0}{" "}
+                Points
               </span>
             </div>
 
             <div className="p-5 flex w-full">
-                <form className="flex flex-col w-full gap-5" onSubmit={formik.handleSubmit}>
-                  <div>
-                    <label className="text-sm">First Name</label>
-                    <Input 
+              <form
+                className="flex flex-col w-full gap-5"
+                onSubmit={formik.handleSubmit}
+              >
+                <div>
+                  <label className="text-sm">First Name</label>
+                  <Input
                     name="first_name"
                     value={formik.values.first_name || ""}
                     onChange={formik.handleChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm">Last Name</label>
-                    <Input 
+                  />
+                </div>
+                <div>
+                  <label className="text-sm">Last Name</label>
+                  <Input
                     name="last_name"
                     value={formik.values.last_name || ""}
                     onChange={formik.handleChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm">Username</label>
-                    <Input 
+                  />
+                </div>
+                <div>
+                  <label className="text-sm">Username</label>
+                  <Input
                     name="name"
-                    value={userLogged?.name || ''}
+                    value={userLogged?.name || ""}
                     classname="text-gray-400"
                     disabled={true}
                     onChange={formik.handleChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm">Email</label>
+                  />
+                </div>
+                <div>
+                  <label className="text-sm">Email</label>
+                  <Input
+                    name="email"
+                    classname="text-gray-400"
+                    value={userLogged?.email || ""}
+                    placeholder="example@mail.com"
+                    disabled={true}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm">Referral Code</label>
+
+                  <div className="flex items-center gap-3">
                     <Input
-                      name="email"
-                      classname="text-gray-400"
-                      value={userLogged?.email || ''}
-                      placeholder="example@mail.com"
                       disabled={true}
+                      placeholder={userLogged?.referral || ""}
+                      classname="referral"
+                    />
+                    <IoCopyOutline
+                      className="hover:cursor-pointer"
+                      onClick={() => {
+                        navigator.clipboard.writeText(
+                          userLogged?.referral || ""
+                        );
+                        toast.success("Referral code copied!");
+                      }}
                     />
                   </div>
-                  <div>
-                    <label className="text-sm">Referral Code</label>
-        
-                    <div className="flex items-center gap-3">
-                      <Input
-                        disabled={true}
-                        placeholder={userLogged?.referral || ''}
-                        classname="referral"
-                      />
-                      <IoCopyOutline className="hover:cursor-pointer" 
-                        onClick={() => {
-                          navigator.clipboard.writeText(userLogged?.referral || "");
-                          toast.success("Referral code copied!");
-                        }}
-                      />
-                    </div>
-                  </div>
-        
-                  <div className="flex justify-between">
-                    <div className="flex gap-2">
-                      {/* <button className="h-[40px] px-8 rounded-xl border flex items-center gap-2 text-sm hover:bg-blue-300 hover:text-white">
+                </div>
+
+                <div className="flex justify-between">
+                  <div className="flex gap-2">
+                    {/* <button className="h-[40px] px-8 rounded-xl border flex items-center gap-2 text-sm hover:bg-blue-300 hover:text-white">
                         Cancel
                       </button> */}
-                      <button type="submit" className="h-[40px] px-8 rounded-xl border items-center gap-2 text-sm bg-blue-300 text-white hover:bg-blue-600">
-                        Update
-                      </button>
-                    </div>
                     <button
-                      onClick={handleForgotPassword}
-                      type="button"
-                      className="h-[40px] px-8 rounded-xl border items-center gap-2 text-sm bg-gray-300 text-white hover:bg-gray-600"
+                      type="submit"
+                      className="h-[40px] px-8 rounded-xl border items-center gap-2 text-sm bg-blue-300 text-white hover:bg-blue-600"
                     >
-                      Reset Password
+                      Update
                     </button>
                   </div>
-                </form>
-              </div>
+                  <button
+                    onClick={handleForgotPassword}
+                    type="button"
+                    className="h-[40px] px-8 rounded-xl border items-center gap-2 text-sm bg-gray-300 text-white hover:bg-gray-600"
+                  >
+                    Reset Password
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
 

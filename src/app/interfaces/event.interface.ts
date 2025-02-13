@@ -1,5 +1,5 @@
 export interface IEvents {
-  id: string;
+  id: number;
   name: string;
   price: number;
   startDate: string;
@@ -10,8 +10,8 @@ export interface IEvents {
   ticketType: string;
   ticketSold: string;
   totalAttendee: number;
-  slug: string
-  imageUrl: string
-  description: string
-  ticketOpen: string
+  slug: string;
+  imageUrl: string;
+  description: string;
+  ticketOpen: string;
 }

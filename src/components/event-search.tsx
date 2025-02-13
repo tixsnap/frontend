@@ -10,7 +10,7 @@ const EventSearch = () => {
 
   const categories = [
     "All Categories",
-    "Music",
+    "MUSIC",
     "Sports",
     "Technology",
     "Business",
@@ -19,7 +19,7 @@ const EventSearch = () => {
 
   const locations = [
     "All Locations",
-    "New York",
+    "Prambanan",
     "London",
     "Paris",
     "Tokyo",
@@ -28,17 +28,19 @@ const EventSearch = () => {
 
   const handleSearch = () => {
     const queryParams = new URLSearchParams();
-    if (searchQuery) queryParams.set("q", searchQuery);
+    if (searchQuery) queryParams.set("name", searchQuery);
     if (selectedCategory !== "All Categories")
       queryParams.set("category", selectedCategory);
     if (selectedLocation !== "All Locations")
       queryParams.set("location", selectedLocation);
 
-    router.push(`/events?${queryParams.toString()}`);
+    router.push(`/events/?${queryParams.toString()}`);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") handleSearch();
+    if (e.key === "Enter") {
+      handleSearch();
+    }
   };
 
   return (

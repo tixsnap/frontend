@@ -1,6 +1,7 @@
-// Navbar.tsx
+"use client";
 import React from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 interface NavLink {
   title: string;
@@ -14,10 +15,10 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ logo = "TixSnap" }) => {
   const navLinks: NavLink[] = [
     { title: "Schedule", href: "/schedule" },
-    { title: "Organizer", href: "/organizer" },
-    { title: "Ticket", href: "/ticket" },
     { title: "Contact", href: "/contact" },
   ];
+
+  const { data: session } = useSession();
 
   return (
     <nav className="shadow-sm" style={{ backgroundColor: "#252A34" }}>
@@ -34,27 +35,55 @@ const Navbar: React.FC<NavbarProps> = ({ logo = "TixSnap" }) => {
 
           {/* Links */}
           <div className="flex items-center space-x-10 text-xl pt-2 pr-5 ">
-            {navLinks.map((link) => (
-              <a
-                key={link.title}
-                href={link.href}
-                className="text-white transition-transform: duration-200 hover:scale-125"
-              >
-                {link.title}
-              </a>
-            ))}
-            <Link href="/login">
-              <button
-                className="border-white border-2 text-white px-4 py-1 rounded-3xl hover:bg-teal-400 hover:text-white transition-transform duration-200 hover:scale-110"
-                style={{
-                  borderWidth: "2px",
-                  borderStyle: "solid",
-                  borderColor: "white",
-                }}
-              >
-                Login
-              </button>
-            </Link>
+            {session?.user?.id ? (
+              <>
+                {navLinks.map((link) => (
+                  <a
+                    key={link.title}
+                    href={link.href}
+                    className="text-white transition-transform: duration-200 hover:scale-125"
+                  >
+                    {link.title}
+                  </a>
+                ))}
+                <Link href="/profile">
+                  <button
+                    className="border-white border-2 text-white px-4 py-1 rounded-3xl hover:bg-teal-400 hover:text-white transition-transform duration-200 hover:scale-110"
+                    style={{
+                      borderWidth: "2px",
+                      borderStyle: "solid",
+                      borderColor: "white",
+                    }}
+                  >
+                    <div>{session.user.name}</div>
+                  </button>
+                </Link>
+              </>
+            ) : (
+              <>
+                {navLinks.map((link) => (
+                  <a
+                    key={link.title}
+                    href={link.href}
+                    className="text-white transition-transform: duration-200 hover:scale-125"
+                  >
+                    {link.title}
+                  </a>
+                ))}
+                <Link href="/auth/login">
+                  <button
+                    className="border-white border-2 text-white px-4 py-1 rounded-3xl hover:bg-teal-400 hover:text-white transition-transform duration-200 hover:scale-110"
+                    style={{
+                      borderWidth: "2px",
+                      borderStyle: "solid",
+                      borderColor: "white",
+                    }}
+                  >
+                    Login
+                  </button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

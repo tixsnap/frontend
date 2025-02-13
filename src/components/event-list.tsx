@@ -1,69 +1,24 @@
-// components/EventList.tsx
-import { FC } from "react";
+"use client";
+import { useEffect } from "react";
 import Image from "next/image";
+import { useEventStore } from "@/app/store/eventStore";
+import defaultImage from "../../public/event-unknown.jpg";
 
-interface Event {
-  id: number;
-  title: string;
-  date: string;
-  imageUrl: string;
-  details: string;
-}
+// const handleKeyPress = (e: React.KeyboardEvent) => {
+//   if (e.key === "Enter") {
+//     handleSearch();
+//     getEventsByParams(handleSearch);
+//   }
+// };
 
-interface EventListProps {
-  events?: Event[];
-}
+const EventList = () => {
+  const { getEventsUser, events } = useEventStore();
 
-const EventList: FC<EventListProps> = ({ events }) => {
-  // Sample data (replace with actual data from props/API)
-  const defaultEvents: Event[] = [
-    {
-      id: 1,
-      title: "Summer Music Festival",
-      date: "2024-07-15",
-      imageUrl: "/placeholder.svg",
-      details: "Annual outdoor music festival featuring top artists",
-    },
-    {
-      id: 2,
-      title: "Tech Conference",
-      date: "2024-08-22",
-      imageUrl: "/placeholder.svg",
-      details: "Leading technology trends and innovations showcase",
-    },
-    {
-      id: 3,
-      title: "Contemporary Art Exhibition",
-      date: "2024-09-10",
-      imageUrl: "/placeholder.svg",
-      details: "Modern art showcase featuring emerging international artists",
-    },
-    {
-      id: 4,
-      title: "City Marathon",
-      date: "2024-10-05",
-      imageUrl: "/placeholder.svg",
-      details: "Annual 42km race through downtown with 5k/10k options",
-    },
-    {
-      id: 5,
-      title: "International Food Festival",
-      date: "2024-11-15",
-      imageUrl: "/placeholder.svg",
-      details:
-        "Culinary experience with 50+ countries' cuisines and live demonstrations",
-    },
-    {
-      id: 6,
-      title: "Literary Conference",
-      date: "2024-12-03",
-      imageUrl: "/placeholder.svg",
-      details:
-        "Celebration of contemporary literature with bestselling authors",
-    },
-  ];
+  useEffect(() => {
+    getEventsUser();
+  }, []);
 
-  const displayedEvents = events || defaultEvents;
+  console.log("events:", events);
 
   return (
     <div className="sm:px-40 lg:px-20" style={{ backgroundColor: "#252A34" }}>
@@ -71,20 +26,20 @@ const EventList: FC<EventListProps> = ({ events }) => {
         Featured Events
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {displayedEvents.slice(0, 6).map((event) => (
+        {events.slice(0, 6).map((event) => (
           <article
             key={event.id}
             className="bg-white rounded-2xl shadow-md overflow-hidden transition-transform duration-300 hover:scale-105"
           >
             <div className="relative h-32">
               <Image
-                src={event.imageUrl}
-                alt={event.title}
+                src={event.imageUrl || defaultImage}
+                alt={event.name}
                 layout="fill"
                 objectFit="cover"
               />
               <div className="absolute top-4 left-4 bg-black/70 text-white px-4 py-2 rounded text-sm">
-                {new Date(event.date).toLocaleDateString("en-US", {
+                {new Date(event.startDate).toLocaleDateString("en-US", {
                   month: "long",
                   day: "numeric",
                 })}
@@ -92,10 +47,10 @@ const EventList: FC<EventListProps> = ({ events }) => {
             </div>
             <div className="p-6">
               <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                {event.title}
+                {event.name}
               </h3>
               <p className="text-gray-600 text-base leading-relaxed">
-                {event.details}
+                {event.description}
               </p>
             </div>
           </article>
