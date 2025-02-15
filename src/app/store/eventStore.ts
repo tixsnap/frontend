@@ -3,6 +3,8 @@ import { IEvents } from "../interfaces/event.interface"
 import axiosInstance from "../utils/axios.helper"
 import { IAttendees } from "../interfaces/attendee.interface"
 import { ITransaction } from "../interfaces/tx.interface"
+import axios from "axios"
+import { IVoucher } from "../interfaces/voucher.interface"
 
 interface EventStore {
     events: IEvents[] | []
@@ -13,10 +15,14 @@ interface EventStore {
     totalTransaction: number
     loading: boolean
     event: IEvents | null
-    getEvents: () => Promise<void>
+    vouchers: IVoucher[] | []
+    transactionsHistory: ITransaction[] | [],
+    getEvents: (name?:string) => Promise<void>
+    getVouchers: () => Promise<void>
     getEventBySlug: (slug: string) => Promise<void>
     getAttendeeListByParams: (slug: string) => Promise<void>
-    getTransactions: () => Promise<void>
+    getTransactions: (name?: string) => Promise<void>
+    getTransactionsHistory: (name?: string) => Promise<void>
     calculateTotals: () => void
 }
 
@@ -24,17 +30,32 @@ export const useEventStore = create<EventStore>((set, get) => ({
     events: [],
     attendees: [],
     transactions: [],
+    vouchers: [],
+    transactionsHistory: [],
     event: null,
     totalTicketSold: 0,
     totalAttendee: 0,
     loading: false,
     totalTransaction: 0,
 
-    getEvents: async() => {
+    getEvents: async(name?: string) => {
+        set({loading: true})
+        try {
+            const res = await axiosInstance.get("/organizer/events", {params: {name}})
+            set({events: res.data.data})
+            get().calculateTotals()
+            
+        } catch (error) {
+            console.log(error)
+        }finally{
+            set({loading:false})
+        }
+    },
+    getEventsUser: async() => {
         set({loading: true})
         try {
 
-            const res = await axiosInstance.get("/organizer/events")
+            const res = await axios.get("/organizer/events")
             set({events: res.data.data})
             get().calculateTotals()
             
@@ -45,7 +66,7 @@ export const useEventStore = create<EventStore>((set, get) => ({
         }
     },
 
-    getEventBySlug: async(slug) => {
+    getEventBySlug: async(slug: string) => {
         set({loading: true})
         try{
             const res = await axiosInstance.get(`/organizer/events/${slug}`);
@@ -75,17 +96,59 @@ export const useEventStore = create<EventStore>((set, get) => ({
         }
     },
 
-    getTransactions: async() => {
+    getTransactions: async(name?: string) => {
+        set({loading: true})
         try {
-
-            const res = await axiosInstance.get("/tx");
-            set({transactions: res.data.data})
+            
+            // base_url/tx?name=dangdut
+            const res = await axiosInstance.get("/tx?", {params: {
+                name
+            }});
+            const transactions = name? res.data.filteredData : res.data.data
+            set({transactions})
         
         } catch (error) {
             console.log(error)
             set({transactions: []})
+        }finally{
+            set({loading: false})
         }
     },
+
+    getTransactionsHistory: async(name?: string) => {
+        set({loading: true})
+        try {
+            
+            // base_url/tx?name=dangdut
+            const res = await axiosInstance.get("/tx/history?", {params: {
+                name
+            }});
+            const transactions = name? res.data.filteredData : res.data.data
+            console.log(res.data)
+            set({transactionsHistory: transactions})
+        
+        } catch (error) {
+            console.log(error)
+            set({transactionsHistory: []})
+        }finally{
+            set({loading: false})
+        }
+    },
+
+    getVouchers: async() => {
+        set({loading: true})
+        try {
+            const res = await axiosInstance.get('/organizer/vouchers')
+            console.log(res.data)
+            set({vouchers: res.data.data})
+            
+        } catch (error) {
+            console.log(error)
+        }finally{
+            set({loading: false})
+        }
+    },
+    
 
     calculateTotals: ()=> {
         const events = get().events

@@ -17,6 +17,10 @@ export default function DashboardSidebar() {
       setIsActive("Attedee List")
     } else if(pathname.includes("event")) {
       setIsActive("Event")
+    } else if(pathname.includes("transaction")) {
+      setIsActive("Transaction")
+    } else if(pathname.includes("vouchers")) {
+      setIsActive("Event")
     }else {
       const matchedItem = Sidebar.find((el) => pathname === el.href);
       setIsActive(matchedItem ? matchedItem.text : "Dashboard");
