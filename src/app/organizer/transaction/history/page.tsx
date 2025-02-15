@@ -1,33 +1,18 @@
 "use client";
 
 import { useEventStore } from "@/app/store/eventStore";
-import axiosInstance from "@/app/utils/axios.helper";
 import Popup from "@/components/Popup";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
-import { toast } from "react-toastify";
 
 export default function page() {
-  const {transactions, getTransactions} = useEventStore()
+  const {transactionsHistory, getTransactionsHistory} = useEventStore()
   const [isSearch, setIsSearch] = useState<string>("")
-
-  const handleSetStatus = async (txId: string, status: string) => {
-    try {
-      await axiosInstance.patch(`/tx/${txId}`, {
-        status,
-        id: txId,
-      });
-      toast.success("Payment Status Updated");
-      getTransactions()
-    } catch (error) {
-      console.error("Error updating status:", error);
-    }
-  };
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      getTransactions(isSearch);
+      getTransactionsHistory(isSearch);
     }, 500);
   
     return () => clearTimeout(delayDebounce);
@@ -41,9 +26,6 @@ export default function page() {
         <CiSearch/>
         <input className="p-2 w-full focus-within:outline-none" placeholder="Search transactions name" onChange={e => setIsSearch(e.target.value)}/>
       </div>
-      <Link href={"transaction/history"} className="p-2 rounded-lg bg-gray-600 text-white text-xs hover:bg-gray-700">
-        View History
-      </Link>
       </div>
       <div className="w-full h-[580]">
         <Popup />
@@ -78,17 +60,14 @@ export default function page() {
                 <th className="px-6 py-4 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                   Payment Proof
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
-                  Action
-                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {transactions && transactions.length > 0 &&
-                transactions.map((_, index) => (
+              {transactionsHistory && transactionsHistory.length > 0 &&
+                transactionsHistory.map((_, index) => (
                   <tr
                     key={index}
-                    className="hover:bg-gray-50 transition-colors duration-200"
+                    className={`transition-colors duration-200 ${_.status == "DONE"? "bg-green-100" : "bg-red-100"}`}
                   >
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {_.event.name}
@@ -97,20 +76,9 @@ export default function page() {
                       {_.user.email}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <select
-                        value={_.status}
-                        onChange={(e) => handleSetStatus(_.id, e.target.value)}
-                        className="border border-gray-300 p-2 rounded-md"
-                      >
-                        <option value="DONE">DONE</option>
-                        <option value="REJECTED">REJECTED</option>
-                        <option value="WAITING_FOR_CONFIRMATION">
-                          WAITING_FOR_CONFIRMATION
-                        </option>
-                        <option value="WAITING_PAYMENT">WAITING_PAYMENT</option>
-                        <option value="EXPIRED">EXPIRED</option>
-                        <option value="CANCELED">CANCELED</option>
-                      </select>
+                        <div className={`px-6 text-sm text-gray-900 ${_.status === "REJECTED" ? "text-red-600" : "text-green-600"}`}>
+                        {_.status === "REJECTED" ? <p className="text-xl font-bold">REJECTED</p> : <p className="text-xl font-bold">ACCEPTED</p>}
+                        </div>                        
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(_.createdAt)
@@ -155,24 +123,6 @@ export default function page() {
                       ) : (
                         ""
                       )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 flex gap-2">
-                      {(
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleSetStatus(_.id, "DONE")}
-                            className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg"
-                          >
-                            Accept
-                          </button>
-                          <button
-                            onClick={() => handleSetStatus(_.id, "REJECTED")}
-                            className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg"
-                          >
-                            Reject
-                          </button>
-                        </div>
-                        )}
                     </td>
                   </tr>
                 ))}

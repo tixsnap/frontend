@@ -1,13 +1,18 @@
 "use client";
 
-import EventChart from "@/components/event/Chart";
-import React, { useEffect } from "react";
+import { EventChartYearly, MostEventAttended, MostEventSold } from "@/components/event/Chart";
+import React, { useEffect, useState } from "react";
 import { useUserStore } from "../store/userStore";
 import { useEventStore } from "../store/eventStore";
 
 export default function Page() {
   const {user, getUserSession} = useUserStore()
   const {events, getEvents, calculateTotals, totalTransaction, getTransactions, totalAttendee, totalTicketSold} = useEventStore()
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
+
+  const handleYearChange = (event: any) => {
+    setSelectedYear(event.target.value);
+  }
 
   useEffect(() => {
     getUserSession()
@@ -97,8 +102,29 @@ export default function Page() {
               </select>
             </div>
           </div>
-          <div className="pt-5">
-          <EventChart/>
+          <div className="py-5 flex flex-col gap-5">
+          <EventChartYearly/>
+
+          <div className="grid grid-cols-2 gap-5">
+            {
+              events.length > 0 &&
+              <MostEventSold
+                key="most-event-sold-all-time"
+                labels={events.map((el) => el.name)}
+                dataset={events.map((el) => Number(el.ticketSold))} 
+              />
+            }
+          
+          {
+              events.length > 0 &&
+              <MostEventAttended
+                key="most-event-attended-all-time"
+                labels={events.map((el) => el.name)}
+                dataset={events.map((el) => Number(el.totalAttendee))} 
+              />
+            }
+          </div>
+          {/* <EventChartMonthly/> */}
           </div>
 
 
