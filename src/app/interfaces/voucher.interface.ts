@@ -6,6 +6,7 @@ export interface IVoucher{
     totalValue: number
     startFrom: string
     validUntil: string
+    isExpired: boolean
     events: {
         event: IEvents            
     }[]

@@ -33,7 +33,7 @@ export default function page() {
           <input className="p-2 w-full focus-within:outline-none" placeholder="Search event name" onChange={e => setIsSearch(e.target.value)}/>
         </div>
         <div className="flex gap-2">
-          <button className="text-xs p-2 bg-green-500 text-white rounded-lg hover:bg-green-600">New Project</button>
+          <Link href={"new"} className="text-xs p-2 bg-green-500 text-white rounded-lg hover:bg-green-600">New Event</Link>
           <Link href={"vouchers"} className="text-xs p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Create Voucher</Link>
         </div>
       </div>
