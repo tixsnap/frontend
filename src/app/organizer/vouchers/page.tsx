@@ -156,7 +156,14 @@ export default function Page() {
                 key={item.id}
               >
                 <div>
-                  <p className="text-lg font-semibold pb-2">{item.name}</p>
+                  <div className="flex gap-2 mb-2">
+                  <p className="text-lg font-semibold">{item.name}</p>
+                  {
+                    item.isExpired && (
+                      <p className="text-[10px] px-1 bg-red-500 text-white w-fit rounded-lg flex items-center">Expired</p>
+                    )
+                  }
+                  </div>
                   <p className="text-lg font-semibold pb-2">
                     {item.totalValue}%
                   </p>

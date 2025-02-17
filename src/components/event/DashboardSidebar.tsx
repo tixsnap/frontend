@@ -15,12 +15,10 @@ export default function DashboardSidebar() {
       setIsActive("My Profile");
     } else if(pathname.includes("attendee")){
       setIsActive("Attedee List")
-    } else if(pathname.includes("event")) {
+    } else if(pathname.includes("event") || pathname.includes("vouchers") || pathname.includes("new")) {
       setIsActive("Event")
     } else if(pathname.includes("transaction")) {
       setIsActive("Transaction")
-    } else if(pathname.includes("vouchers")) {
-      setIsActive("Event")
     }else {
       const matchedItem = Sidebar.find((el) => pathname === el.href);
       setIsActive(matchedItem ? matchedItem.text : "Dashboard");

@@ -22,6 +22,8 @@ export default function TopBar() {
       setHeaderText("Transaction History")
     } else if(pathname.includes("vouchers")) {
       setHeaderText("Voucher")
+    } else if(pathname.includes("new")) {
+      setHeaderText("Create Event")
     } else {
       const matchedItem = Sidebar.find((el) => pathname === el.href);
       setHeaderText(matchedItem ? matchedItem.text : "Dashboard");
