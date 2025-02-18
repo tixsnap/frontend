@@ -7,9 +7,9 @@ import axiosInstance from "../utils/axios.helper";
 interface UserStore {
   user: User | null;
   loading: boolean;
-  profile: IProfile | null
+  profile: IProfile | null;
   getUserSession: () => Promise<void>;
-  getUserProfile: () => Promise<void>
+  getUserProfile: () => Promise<void>;
 }
 
 export const useUserStore = create<UserStore>((set) => ({
@@ -27,15 +27,15 @@ export const useUserStore = create<UserStore>((set) => ({
       set({ loading: false });
     }
   },
-  getUserProfile: async() => {
+  getUserProfile: async () => {
     set({ loading: true });
     try {
-      const res = await axiosInstance.get('/profile')
+      const res = await axiosInstance.get("/profile");
       set({ profile: res.data.data || null });
     } catch (error) {
       console.log(error);
     } finally {
       set({ loading: false });
     }
-  }
+  },
 }));
