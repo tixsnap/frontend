@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { User, CheckCircle, XCircle, Clock } from "lucide-react";
 import Image from "next/image";
 import { useUserStore } from "../store/userStore";
+import { useEventStore } from "../store/eventStore";
 import Input from "@/components/atom/Input";
 import { IoCopyOutline } from "react-icons/io5";
 import { useFormik } from "formik";
@@ -13,39 +14,6 @@ import { CiImageOn } from "react-icons/ci";
 import Popup from "@/components/Popup";
 
 const UserProfile = () => {
-  // TODO: ganti data dummy dengan prisma
-  const user = {
-    id: 1,
-    firstName: "John",
-    lastName: "Doe",
-    profilePicture: null,
-    totalPoints: 1250,
-    transactions: [
-      {
-        id: 1,
-        totalPayment: 150.0,
-        status: "completed",
-        validUntil: "2025-03-09",
-        validUntilConfirmation: true,
-        createdAt: "2025-02-01",
-        updatedAt: "2025-02-01",
-        eventId: "EVT001",
-        totalTickets: 2,
-      },
-      {
-        id: 2,
-        totalPayment: 75.0,
-        status: "pending",
-        validUntil: "2025-04-15",
-        validUntilConfirmation: false,
-        createdAt: "2025-02-08",
-        updatedAt: "2025-02-08",
-        eventId: "EVT002",
-        totalTickets: 1,
-      },
-    ],
-  };
-
   // GATOT
   // Handle profile
   const {
@@ -55,9 +23,12 @@ const UserProfile = () => {
     getUserSession,
   } = useUserStore();
 
+  const { getTransactions, transactions } = useEventStore();
+
   useEffect(() => {
     getUserProfile();
     getUserSession();
+    getTransactions();
   }, []);
 
   useEffect(() => {
@@ -282,13 +253,10 @@ const UserProfile = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Created
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Updated
-                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {user.transactions.map((transaction) => (
+                {transactions.map((transaction) => (
                   <tr key={transaction.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {transaction.eventId}
@@ -299,12 +267,12 @@ const UserProfile = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-sm ${
-                          transaction.status === "completed"
+                          transaction.status === "DONE"
                             ? "bg-green-100 text-green-800"
                             : "bg-yellow-100 text-yellow-800"
                         }`}
                       >
-                        {transaction.status === "completed" ? (
+                        {transaction.status === "DONE" ? (
                           <CheckCircle className="w-4 h-4" />
                         ) : (
                           <Clock className="w-4 h-4" />
@@ -314,8 +282,8 @@ const UserProfile = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <div className="flex items-center gap-1">
-                        {transaction.validUntil}
-                        {transaction.validUntilConfirmation ? (
+                        {transaction.validUntilPaymentProof}
+                        {transaction.validUntilPaymentProof ? (
                           <CheckCircle className="w-4 h-4 text-green-500" />
                         ) : (
                           <XCircle className="w-4 h-4 text-red-500" />
@@ -323,13 +291,10 @@ const UserProfile = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {transaction.totalTickets}
+                      {transaction.totalTicket}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {new Date(transaction.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(transaction.updatedAt).toLocaleDateString()}
                     </td>
                   </tr>
                 ))}
