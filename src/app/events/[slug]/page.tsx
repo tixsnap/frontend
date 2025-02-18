@@ -131,7 +131,6 @@ const Page: React.FC<IEvents> = ({
               query: {
                 eventId: id,
                 originalPrice: price,
-                maxPoints: userPoints || 0, // TODO: import user points
                 availableSeats: ticketOpen,
               },
             })
