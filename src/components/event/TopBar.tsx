@@ -18,6 +18,12 @@ export default function TopBar() {
       setHeaderText("My Profile");
     } else if(pathname.includes("event")) {
       setHeaderText("Event");
+    } else if(pathname.includes("history")) {
+      setHeaderText("Transaction History")
+    } else if(pathname.includes("vouchers")) {
+      setHeaderText("Voucher")
+    } else if(pathname.includes("new")) {
+      setHeaderText("Create Event")
     } else {
       const matchedItem = Sidebar.find((el) => pathname === el.href);
       setHeaderText(matchedItem ? matchedItem.text : "Dashboard");
@@ -25,7 +31,7 @@ export default function TopBar() {
   }, [pathname]);
 
   return (
-    <div className="ml-[210px] h-[80px] flex justify-end items-center border-b-2 px-10 shadow-2xl rounded-xl">
+    <div className="ml-[210px] h-[80px] flex justify-end items-center px-10 shadow-lg rounded-xl sticky top-0 z-10 bg-white">
       <div className="flex items-center w-full gap-5 justify-between">
         <div>
           <p className="font-bold text-xl">{headerText}</p>

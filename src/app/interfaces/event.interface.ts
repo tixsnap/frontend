@@ -9,8 +9,9 @@ export interface IEvents {
   ticketType: string;
   ticketSold: string;
   totalAttendee: number;
-  slug: string;
-  imageUrl: string;
-  description: string;
-  ticketOpen: number;
+  slug: string
+  imageUrl: string
+  description: string
+  ticketOpen: string
+  createdAt: string
 }

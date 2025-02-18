@@ -22,6 +22,7 @@ export interface ITransaction {
     | "EXPIRED"
     | "CANCELED";
   validUntilPaymentProof: string;
+  validUntilConfirmation: string;
   totalTicket: number;
   createdAt: string;
 }

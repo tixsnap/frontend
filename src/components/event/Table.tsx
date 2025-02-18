@@ -58,7 +58,7 @@ export default function Table({ events }: { events: IEvents[] }) {
               <td
                 className={`px-5 text-start pl-5 py-6 whitespace-nowrap text-sm border-b text-gray-900`}
               >
-                <Image src={event.imageUrl || NoImage} alt="event-logo" width={500} height={500} className="rounded-full w-[200] h-[80] object-cover"/>
+                <Image src={event.imageUrl || NoImage} alt="event-logo" width={200} height={200} className="rounded-full w-[50] h-[50] object-cover"/>
               </td>
               
               <TableRow
