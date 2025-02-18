@@ -3,11 +3,10 @@ import { useEffect } from "react";
 import Image from "next/image";
 import { useEventStore } from "@/app/store/eventStore";
 import { IEvents } from "@/app/interfaces/event.interface";
-import { useRouter } from "next/router";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 const Page: React.FC<IEvents> = ({
-  id,
   name,
   ticketType,
   imageUrl,
@@ -17,9 +16,11 @@ const Page: React.FC<IEvents> = ({
   ticketOpen,
   price,
 }) => {
-  const { getEventBySlugUser, events } = useEventStore();
+  const { getEventBySlugUser, event } = useEventStore();
   const pathname = usePathname();
-  const eventSlug = pathname.split("/")[3];
+  const eventSlug = pathname.split("/events/")[1];
+  console.log("ini slug", eventSlug);
+  console.log("ini pathname", pathname);
 
   // const queryParams = params?.toString();
 
@@ -31,7 +32,7 @@ const Page: React.FC<IEvents> = ({
   // const params = new URLSearchParams(queryParams);
   // const searchParams = Object.fromEntries(params);
 
-  console.log("rendering events:", events);
+  console.log("rendering events:", event);
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -41,7 +42,6 @@ const Page: React.FC<IEvents> = ({
       day: "numeric",
     });
   };
-  const router = useRouter();
 
   return (
     <div
@@ -123,21 +123,23 @@ const Page: React.FC<IEvents> = ({
 
       {/* Action Buttons Section */}
       <div className="flex flex-col md:flex-row gap-9 w-full items-center justify-center">
-        <button
+        <Link
           className="px-6 py-3 text-white text-xl font-bold rounded-3xl transition-transform: duration-200 hover:scale-110"
+          href={"/checkout"}
           style={{ backgroundColor: "#FF2E63" }}
-          onClick={() =>
-            router.push("/checkout", {
-              query: {
-                eventId: id,
-                originalPrice: price,
-                availableSeats: ticketOpen,
-              },
-            })
-          }
+          // onClick={() => (
+          //   "/checkout",
+          //   {
+          //     query: {
+          //       eventId: id,
+          //       originalPrice: price,
+          //       availableSeats: ticketOpen,
+          //     },
+          //   }
+          // )}
         >
           Get Event Ticket
-        </button>
+        </Link>
         {ticketType && (
           <button className="px-6 py-3 text-lg font-bold bg-cyan-500 text-white rounded-3xl transition-transform: duration-200 hover:scale-110 ">
             Submit Payment Proof
