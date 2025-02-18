@@ -1,6 +1,6 @@
 import Navbar from "@/components/navbar";
 import HeroSection from "@/components/hero";
-import EventSearch from "@/components/event-search";
+// import EventSearch from "@/components/event-search";
 import EventList from "@/components/event-list";
 
 export default function Home() {
@@ -8,7 +8,7 @@ export default function Home() {
     <div>
       <Navbar />
       <HeroSection />
-      <EventSearch />
+      {/* <EventSearch /> */}
       <EventList />
     </div>
   );

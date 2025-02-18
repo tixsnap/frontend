@@ -4,7 +4,6 @@ export interface IEvents {
   price: number;
   startDate: string;
   endDate: string;
-  availableSeat: number;
   location: string;
   category: string;
   ticketType: string;
@@ -13,5 +12,5 @@ export interface IEvents {
   slug: string;
   imageUrl: string;
   description: string;
-  ticketOpen: string;
+  ticketOpen: number;
 }

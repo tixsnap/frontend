@@ -17,8 +17,9 @@ interface EventStore {
   userEvents: IEvents[] | [];
   getEvents: () => Promise<void>;
   getEventsUser: () => Promise<void>;
-  getEventsByParams: (params: { [key: string]: string }) => Promise<void>;
+  getEventsByParams: (param: string) => Promise<void>;
   getEventBySlug: (slug: string) => Promise<void>;
+  getEventBySlugUser: (slug: string) => Promise<void>;
   getAttendeeListByParams: (slug: string) => Promise<void>;
   getTransactions: () => Promise<void>;
   calculateTotals: () => void;
@@ -73,13 +74,25 @@ export const useEventStore = create<EventStore>((set, get) => ({
     }
   },
 
-  // localhost:8080/events/?name=java+jazz&category=MUSIC&location=Prambanan
-
-  getEventsByParams: async (params: { [key: string]: string }) => {
+  getEventBySlugUser: async (slug) => {
     set({ loading: true });
     try {
-      const queryString = new URLSearchParams(params).toString();
-      const url = `http://localhost:8080/events/?${queryString}`;
+      const res = await axios.get(`/events/${slug}`);
+      set({ event: res.data.data });
+    } catch (error) {
+      console.log(error);
+      set({ event: null });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  // localhost:8080/events/?name=java+jazz&category=MUSIC&location=Prambanan
+
+  getEventsByParams: async (param) => {
+    set({ loading: true });
+    try {
+      const url = `http://localhost:8080/events/?${param}`;
       const res = await axios.get(url);
       set({ events: res.data.data });
     } catch (error) {

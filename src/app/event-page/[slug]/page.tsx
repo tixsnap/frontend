@@ -1,19 +1,36 @@
-import React from "react";
+"use client";
+import { useEffect } from "react";
 import Image from "next/image";
-import { useNavigate } from "react-router-dom";
-import { EventDetailPageProps } from "../interfaces/eventDetail.schema";
+import { useEventStore } from "@/app/store/eventStore";
+import { IEvents } from "@/app/interfaces/event.interface";
+import { useRouter } from "next/router";
 
-const EventPage: React.FC<EventDetailPageProps> = ({
-  eventName,
-  isPaidEvent,
+const Page: React.FC<IEvents> = ({
+  id,
+  name,
+  ticketType,
   imageUrl,
   description,
   startDate,
   endDate,
-  availableSeats,
+  availableSeat,
   price,
+  slug,
 }) => {
-  // Helper function to format dates
+  const { getEventBySlugUser, events } = useEventStore();
+
+  // const queryParams = params?.toString();
+
+  useEffect(() => {
+    getEventBySlugUser(slug);
+  }, []);
+
+  // if (queryParams) {
+  // const params = new URLSearchParams(queryParams);
+  // const searchParams = Object.fromEntries(params);
+
+  console.log("rendering events:", events);
+
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -22,8 +39,7 @@ const EventPage: React.FC<EventDetailPageProps> = ({
       day: "numeric",
     });
   };
-
-  const navigate = useNavigate();
+  const router = useRouter();
 
   return (
     <div
@@ -33,15 +49,15 @@ const EventPage: React.FC<EventDetailPageProps> = ({
       {/* Event Header Section */}
       <div className="mb-4 relative">
         <div className="flex justify-between items-start mb-6">
-          <h1 className="text-5xl font-bold text-white mb-2">{eventName}</h1>
+          <h1 className="text-5xl font-bold text-white mb-2">{name}</h1>
           <span
             className={`${
-              isPaidEvent
+              ticketType
                 ? "bg-pink-100 text-pink-800"
                 : "bg-cyan-100 text-cyan-800"
             } px-4 py-2 rounded-full font-bold text-xl`}
           >
-            {isPaidEvent ? "Paid Event" : "Free Event"}
+            {ticketType ? "Paid Event" : "Free Event"}
           </span>
         </div>
 
@@ -49,7 +65,7 @@ const EventPage: React.FC<EventDetailPageProps> = ({
         <div className="mb-8">
           <Image
             src={imageUrl || "/placeholder.svg"}
-            alt={`${eventName} banner`}
+            alt={`${name} banner`}
             className="w-full h-96 object-cover rounded-xl shadow-lg"
             width={1200} // width of the image
             height={600} // height of the image
@@ -87,13 +103,13 @@ const EventPage: React.FC<EventDetailPageProps> = ({
               <p className="text-gray-700 font-medium">Available Seats:</p>
               <p
                 className={`text-lg ${
-                  availableSeats < 50 ? "text-red-600" : "text-green-600"
+                  availableSeat < 50 ? "text-red-600" : "text-green-600"
                 }`}
               >
-                {availableSeats} seats remaining
+                {availableSeat} seats remaining
               </p>
             </div>
-            {isPaidEvent && (
+            {ticketType && (
               <div>
                 <p className="text-gray-700 font-medium">Price per Ticket:</p>
                 <p className="text-lg text-blue-600">${price?.toFixed(2)}</p>
@@ -109,19 +125,19 @@ const EventPage: React.FC<EventDetailPageProps> = ({
           className="px-6 py-3 text-white text-xl font-bold rounded-3xl transition-transform: duration-200 hover:scale-110"
           style={{ backgroundColor: "#FF2E63" }}
           onClick={() =>
-            navigate("/checkout", {
-              state: {
-                eventId: "your-event-id-here", // TODO: pass event id
+            router.push("/checkout", {
+              query: {
+                eventId: id,
                 originalPrice: price,
-                maxPoints: userPoints, // TODO: import user points
-                availableSeats: availableSeats,
+                maxPoints: userPoints || 0, // TODO: import user points
+                availableSeats: availableSeat,
               },
             })
           }
         >
           Get Event Ticket
         </button>
-        {isPaidEvent && (
+        {ticketType && (
           <button className="px-6 py-3 text-lg font-bold bg-cyan-500 text-white rounded-3xl transition-transform: duration-200 hover:scale-110 ">
             Submit Payment Proof
           </button>
@@ -129,6 +145,10 @@ const EventPage: React.FC<EventDetailPageProps> = ({
       </div>
     </div>
   );
+  // } else {
+  // If there are no query parameters, redirect to a different page or render a different component
+  // return <div>{`nothing found ${queryParams}`}</div>;
+  // }
 };
 
-export default EventDetailPage;
+export default Page;
