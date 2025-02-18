@@ -17,18 +17,18 @@ const EventList = () => {
   const categories = [
     "All Categories",
     "MUSIC",
-    "Sports",
-    "Technology",
-    "Business",
-    "Art & Culture",
+    "SPORTS",
+    "TECH",
+    "BUSINESS",
+    "ART",
   ];
 
   const locations = [
     "All Locations",
     "Prambanan",
-    "London",
-    "Paris",
-    "Tokyo",
+    "Bali",
+    "Jakarta",
+    "Yogyakarta",
     "Online",
   ];
   const HandleSearch = () => {
