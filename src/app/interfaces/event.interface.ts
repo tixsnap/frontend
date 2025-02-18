@@ -14,4 +14,5 @@ export interface IEvents {
   imageUrl: string
   description: string
   ticketOpen: string
+  createdAt: string
 }

@@ -18,7 +18,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 export const EventChartYearly = () => {
   // Dummy data
   const data = {
-    labels: ["2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"],
+    labels: ["January", "Februay", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "December"],
     datasets: [
       {
         label: "Number of Events",
@@ -39,8 +39,7 @@ export const EventChartYearly = () => {
         position: "top" as const,
       },
       title: {
-        display: true,
-        text: "Yearly",
+        display: true
       },
     },
   };

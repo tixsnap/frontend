@@ -22,14 +22,14 @@ export default function page() {
         <div className="grid grid-cols-2">
           <div className="flex flex-col min-h-[580] gap-2">
             <h1 className="text-2xl mb-5">
-              {query.replace("-", " ").toUpperCase()}
+              {query.replace(/-/g, " ").toUpperCase()}
             </h1>
 
             <Image
               src={
-                attendees.length > 0 && attendees[0].event.imageUrl
-                  ? attendees[0].event.imageUrl
-                  : UnknownEvent
+                // attendees.length > 0 && attendees[0].event.imageUrl
+                //   ? attendees[0].event.imageUrl
+                event?.imageUrl? event?.imageUrl : UnknownEvent
               }
               alt="event-photo"
               className="rounded-lg h-[500] object-cover w-[600]"

@@ -3,10 +3,12 @@
 import React, { useEffect, useState } from "react";
 import Table from "@/components/event/Table";
 import Popup from "@/components/Popup";
-import Image from "next/image";
+// import Image from "next/image";
 import { useEventStore } from "@/app/store/eventStore";
 import { CiSearch } from "react-icons/ci";
 import Link from "next/link";
+import Skeleton from "@/components/event/Skeleton";
+import ListNotFound from "@/components/event/ListNotFound";
 
 export default function page() {
   const { events, getEvents, loading } = useEventStore();
@@ -38,20 +40,7 @@ export default function page() {
         </div>
       </div>
       {
-        loading? (
-          <div className="flex h-screen w-full items-center justify-center">
-            <div className="w-16 h-16 border-4 border-red-400 border-double rounded-full animate-spin"></div>
-          </div>
-        ) : events.length > 0 ? (<Table events={events} />) : (<div className="flex items-center justify-center w-full h-screen -mt-36">
-          <Image
-            alt="not-found"
-            src={"/eventnotfound.webp"}
-            width={500}
-            priority
-            height={500}
-            className="w-auto h-auto"
-          />
-        </div>)
+        loading? <Skeleton/> : events.length > 0 ? <Table events={events} /> : <ListNotFound image="/eventnotfound.webp"/>
       }
 
     </div>

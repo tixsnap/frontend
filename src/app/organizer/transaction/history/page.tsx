@@ -24,7 +24,7 @@ export default function page() {
 
       <div className="flex gap-2 items-center border mb-5 bg-white rounded-lg w-[500] pl-5 text-sm  ">
         <CiSearch/>
-        <input className="p-2 w-full focus-within:outline-none" placeholder="Search transactions name" onChange={e => setIsSearch(e.target.value)}/>
+        <input className="p-2 w-full focus-within:outline-none" placeholder="Search history by event" onChange={e => setIsSearch(e.target.value)}/>
       </div>
       </div>
       <div className="w-full h-[580]">
