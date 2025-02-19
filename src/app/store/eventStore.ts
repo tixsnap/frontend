@@ -25,6 +25,7 @@ interface EventStore {
   getEventBySlugUser: (slug: string) => Promise<void>;
   getAttendeeListByParams: (slug: string) => Promise<void>;
   getTransactions: (name?: string) => Promise<void>;
+  getTransactionsUser: () => Promise<void>;
   getTransactionsHistory: (name?: string) => Promise<void>;
   calculateTotals: () => void;
 }
@@ -108,6 +109,20 @@ export const useEventStore = create<EventStore>((set, get) => ({
           name,
         },
       });
+      const transactions = name ? res.data.filteredData : res.data.data;
+      set({ transactions });
+    } catch (error) {
+      console.log(error);
+      set({ transactions: [] });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  getTransactionsUser: async (name?: string) => {
+    set({ loading: true });
+    try {
+      const res = await axios.get("http://localhost:8080/usertx");
       const transactions = name ? res.data.filteredData : res.data.data;
       set({ transactions });
     } catch (error) {

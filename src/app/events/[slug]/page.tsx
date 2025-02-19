@@ -6,16 +6,7 @@ import { IEvents } from "@/app/interfaces/event.interface";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
-const Page: React.FC<IEvents> = ({
-  name,
-  ticketType,
-  imageUrl,
-  description,
-  startDate,
-  endDate,
-  ticketOpen,
-  price,
-}) => {
+const Page: React.FC<IEvents> = ({ ticketType }) => {
   const { getEventBySlugUser, event } = useEventStore();
   const pathname = usePathname();
   const eventSlug = pathname.split("/events/")[1];
@@ -51,7 +42,7 @@ const Page: React.FC<IEvents> = ({
       {/* Event Header Section */}
       <div className="mb-4 relative">
         <div className="flex justify-between items-start mb-6">
-          <h1 className="text-5xl font-bold text-white mb-2">{name}</h1>
+          <h1 className="text-5xl font-bold text-white mb-2">{event?.name}</h1>
           <span
             className={`${
               ticketType
@@ -66,8 +57,8 @@ const Page: React.FC<IEvents> = ({
         {/* Event Image Section */}
         <div className="mb-8">
           <Image
-            src={imageUrl || "/placeholder.svg"}
-            alt={`${name} banner`}
+            src={event?.imageUrl || "/placeholder.svg"}
+            alt={`${event?.name} banner`}
             className="w-full h-96 object-cover rounded-xl shadow-lg"
             width={1200} // width of the image
             height={600} // height of the image
@@ -81,16 +72,20 @@ const Page: React.FC<IEvents> = ({
           <h2 className="text-2xl font-semibold text-gray-700 mb-4">
             Event Details
           </h2>
-          <p className="text-gray-600 mb-6">{description}</p>
+          <p className="text-gray-600 mb-6">{event?.description}</p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <p className="text-gray-700 font-medium">Start Date:</p>
-              <p className="text-gray-600">{formatDate(startDate)}</p>
+              <p className="text-gray-600">
+                {formatDate(event?.startDate as string)}
+              </p>
             </div>
             <div>
               <p className="text-gray-700 font-medium">End Date:</p>
-              <p className="text-gray-600">{formatDate(endDate)}</p>
+              <p className="text-gray-600">
+                {formatDate(event?.endDate as string)}
+              </p>
             </div>
           </div>
         </div>
@@ -105,18 +100,22 @@ const Page: React.FC<IEvents> = ({
               <p className="text-gray-700 font-medium">Available Seats:</p>
               <p
                 className={`text-lg ${
-                  ticketOpen < 50 ? "text-red-600" : "text-green-600"
+                  event?.ticketOpen !== undefined && event?.ticketOpen < 50
+                    ? "text-red-600"
+                    : "text-green-600"
                 }`}
               >
-                {ticketOpen} seats remaining
+                {event?.ticketOpen} seats remaining
               </p>
             </div>
-            {ticketType && (
-              <div>
-                <p className="text-gray-700 font-medium">Price per Ticket:</p>
-                <p className="text-lg text-blue-600">${price?.toFixed(2)}</p>
-              </div>
-            )}
+            (
+            <div>
+              <p className="text-gray-700 font-medium">Price per Ticket:</p>
+              <p className="text-lg text-blue-600">
+                ${event?.price?.toFixed(2)}
+              </p>
+            </div>
+            )
           </div>
         </div>
       </div>
@@ -125,7 +124,9 @@ const Page: React.FC<IEvents> = ({
       <div className="flex flex-col md:flex-row gap-9 w-full items-center justify-center">
         <Link
           className="px-6 py-3 text-white text-xl font-bold rounded-3xl transition-transform: duration-200 hover:scale-110"
-          href={"/checkout"}
+          href={{
+            pathname: `/checkout/${event?.slug}`,
+          }}
           style={{ backgroundColor: "#FF2E63" }}
           // onClick={() => (
           //   "/checkout",

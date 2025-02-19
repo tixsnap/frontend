@@ -23,12 +23,15 @@ const UserProfile = () => {
     getUserSession,
   } = useUserStore();
 
-  const { getTransactions, transactions } = useEventStore();
+  const { getTransactionsUser, transactions } = useEventStore();
 
   useEffect(() => {
-    getUserProfile();
-    getUserSession();
-    getTransactions();
+    const fetchUserData = async () => {
+      await getUserProfile();
+      await getUserSession();
+      await getTransactionsUser();
+    };
+    fetchUserData();
   }, []);
 
   useEffect(() => {
@@ -88,6 +91,8 @@ const UserProfile = () => {
       const res = await axiosInstance.post(`/auth/forgot-password`, {
         email: userLogged?.email,
       });
+      console.log(res.data);
+
       toast.success("Link reset-password has been sent to your email");
     } catch (error) {
       console.log(error);
@@ -131,7 +136,7 @@ const UserProfile = () => {
             <div className="mt-2">
               <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
                 {profile?.user?.point?.totalPoint
-                  ? profile.user.point.totalPoint.toLocaleString("id-ID")
+                  ? profile.user.point.totalPoint.toLocaleString()
                   : 0}{" "}
                 Points
               </span>
@@ -199,6 +204,8 @@ const UserProfile = () => {
                   </div>
                 </div>
 
+                <div>{userLogged?.name}</div>
+
                 <div className="flex justify-between">
                   <div className="flex gap-2">
                     {/* <button className="h-[40px] px-8 rounded-xl border flex items-center gap-2 text-sm hover:bg-blue-300 hover:text-white">
@@ -257,33 +264,33 @@ const UserProfile = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {transactions.map((transaction) => (
-                  <tr key={transaction.id}>
+                  <tr key={transaction?.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {transaction.eventId}
+                      {transaction?.eventId}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      ${transaction.totalPayment.toFixed(2)}
+                      ${transaction?.totalPayment.toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-sm ${
-                          transaction.status === "DONE"
+                          transaction?.status === "DONE"
                             ? "bg-green-100 text-green-800"
                             : "bg-yellow-100 text-yellow-800"
                         }`}
                       >
-                        {transaction.status === "DONE" ? (
+                        {transaction?.status === "DONE" ? (
                           <CheckCircle className="w-4 h-4" />
                         ) : (
                           <Clock className="w-4 h-4" />
                         )}
-                        {transaction.status}
+                        {transaction?.status}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <div className="flex items-center gap-1">
-                        {transaction.validUntilPaymentProof}
-                        {transaction.validUntilPaymentProof ? (
+                        {transaction?.validUntilPaymentProof}
+                        {transaction?.validUntilPaymentProof ? (
                           <CheckCircle className="w-4 h-4 text-green-500" />
                         ) : (
                           <XCircle className="w-4 h-4 text-red-500" />
@@ -291,10 +298,10 @@ const UserProfile = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {transaction.totalTicket}
+                      {transaction?.totalTicket}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(transaction.createdAt).toLocaleDateString()}
+                      {new Date(transaction?.createdAt).toLocaleDateString()}
                     </td>
                   </tr>
                 ))}
