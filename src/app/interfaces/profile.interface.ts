@@ -8,6 +8,7 @@ export interface IProfile {
   user : {
     point: {
       totalPoint?: string
+      isExpired: boolean
     }
   }
 }
