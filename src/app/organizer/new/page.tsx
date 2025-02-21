@@ -15,11 +15,6 @@ const EventCreationPage = () => {
   const [file, setFile] = useState<File | null>(null);
   const router = useRouter();
 
-  // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM4MDczM2ExLWY2YTAtNGM2NS05NGY4LTM1OGNjNDY0MmEwYyIsInJvbGUiOiJPUkdBTklaRVIiLCJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwibmFtZSI6ImRpbmEiLCJyZWZlcnJhbCI6IlY5WkM0T1Q2OCIsImlhdCI6MTc0MDE0NDQ2OSwiZXhwIjoxNzQwMTQ4MDY5fQ.0YrtvWxDDCTbQCS-uFgvmj_1TdFYoliripJ6-4UV7gE
-  const token = localStorage.getItem(
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAxNTQ0OGNjLTQ4ZjQtNGU3Yy1iNTQ3LWMyOTVlNzVlZGE1ZSIsInJvbGUiOiJPUkdBTklaRVIiLCJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwibmFtZSI6Imhlcm1hbiIsInJlZmVycmFsIjoiODVRQjVHTTBLIiwiaWF0IjoxNzQwMTQ4NDQ3LCJleHAiOjE3NDAxNTIwNDd9.liEMckqurGHtJBvQPoGwaNQ6sNsS74KJds2774BMyz4"
-  );
-
   axiosInstance.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
     return config;
