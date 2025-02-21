@@ -1,24 +1,17 @@
 "use client";
 import { useEventStore } from "@/app/store/eventStore";
 import axiosInstance from "@/app/utils/axios.helper";
-import axios from "axios";
 import Popup from "@/components/Popup";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CiImageOn } from "react-icons/ci";
 import { toast } from "react-toastify";
-import { Router } from "express";
 
 const EventCreationPage = () => {
   const { getEvents, events } = useEventStore();
   const [file, setFile] = useState<File | null>(null);
   const router = useRouter();
-
-  axiosInstance.interceptors.request.use((config) => {
-    config.headers.Authorization = `Bearer ${token}`;
-    return config;
-  });
 
   const formik = useFormik({
     initialValues: {

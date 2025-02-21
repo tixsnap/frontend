@@ -5,6 +5,7 @@ import { IAttendees } from "../interfaces/attendee.interface";
 import { ITransaction } from "../interfaces/tx.interface";
 import axios from "axios";
 import { IVoucher } from "../interfaces/voucher.interface";
+import { IReviews } from "../interfaces/review.interface";
 
 interface EventStore {
   events: IEvents[] | [];
@@ -17,6 +18,8 @@ interface EventStore {
   event: IEvents | null;
   vouchers: IVoucher[] | [];
   transactionsHistory: ITransaction[] | [];
+  reviews: IReviews[] | [];
+  review: IReviews | null;
   getEvents: (name?: string) => Promise<void>;
   getVouchers: () => Promise<void>;
   getEventsUser: () => Promise<void>;
@@ -27,6 +30,7 @@ interface EventStore {
   getTransactions: (name?: string) => Promise<void>;
   getTransactionsUser: () => Promise<void>;
   getTransactionsHistory: (name?: string) => Promise<void>;
+  getReviews: () => Promise<void>;
   calculateTotals: () => void;
 }
 
@@ -36,6 +40,7 @@ export const useEventStore = create<EventStore>((set, get) => ({
   transactions: [],
   vouchers: [],
   transactionsHistory: [],
+  reviews: [],
   event: null,
   totalTicketSold: 0,
   totalAttendee: 0,
@@ -200,14 +205,25 @@ export const useEventStore = create<EventStore>((set, get) => ({
     }
   },
 
-  // localhost:8080/events/?name=java+jazz&category=MUSIC&location=Prambanan
-
   getEventsByParams: async (param) => {
     set({ loading: true });
     try {
       const url = `http://localhost:8080/events/?${param}`;
       const res = await axios.get(url);
       set({ events: res.data.data });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  getReviews: async () => {
+    set({ loading: true });
+    try {
+      const res = await axios.get("http://localhost:8080/review");
+      set({ events: res.data.data });
+      get().calculateTotals();
     } catch (error) {
       console.log(error);
     } finally {

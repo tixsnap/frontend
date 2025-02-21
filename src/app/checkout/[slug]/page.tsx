@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, CreditCard } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useEventStore } from "@/app/store/eventStore";
 import axios from "@/app/utils/axios.helper";
 import { useFormik } from "formik";
@@ -172,15 +172,6 @@ const CheckoutPage: React.FC<IEvents> = () => {
                     })}
                   </span>
                 </div>
-                {/* <div className="flex justify-between font-bold text-lg border-t pt-2">
-                  <span>Total</span>
-                  <span>
-                    {total.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                    })}
-                  </span>
-                </div> */}
               </div>
             </div>
           </div>
