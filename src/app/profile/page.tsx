@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { User, CheckCircle, XCircle, Clock } from "lucide-react";
 import Image from "next/image";
 import { useUserStore } from "../store/userStore";
@@ -12,6 +12,7 @@ import axiosInstance from "../utils/axios.helper";
 import { toast } from "react-toastify";
 import { CiImageOn } from "react-icons/ci";
 import Popup from "@/components/Popup";
+import { getSession, useSession } from "next-auth/react";
 
 const UserProfile = () => {
   // GATOT
@@ -23,7 +24,15 @@ const UserProfile = () => {
     getUserSession,
   } = useUserStore();
 
+  const currSess = useSession()
+
+  interface ICouponReff {
+    isExpired: boolean
+    totalValue: number
+  }
+
   const { getTransactions, transactions } = useEventStore();
+  const [couponReff, setCouponReff] = useState<ICouponReff>()
 
   useEffect(() => {
     getUserProfile();
@@ -58,6 +67,27 @@ const UserProfile = () => {
       toast.success("Profile Updated");
     },
   });
+
+  useEffect(()=> {
+    getCouponRefferal()
+  }, [])
+
+  const getCouponRefferal = async() => {
+    try {
+
+    //   const res = await fetch("http://localhost:8080/profile/coupon-refferal", {
+    //     headers: {
+    //       "Authorization": "Bearer " + currSess.data?.user.access_token
+    //     }
+    //   })
+
+      const res = await axiosInstance.get("profile/coupon-refferal")
+      setCouponReff(res.data.data)
+      
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) {
@@ -129,12 +159,41 @@ const UserProfile = () => {
               {profile?.firstName} {profile?.lastName}
             </h1>
             <div className="mt-2">
-              <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
-                {profile?.user?.point?.totalPoint
-                  ? profile.user.point.totalPoint.toLocaleString("id-ID")
-                  : 0}{" "}
-                Points
-              </span>
+              {
+                profile?.user.point?.isExpired ? (
+                  <span className="px-3 py-1 bg-red-500 text-white cursor-not-allowed  rounded-full text-sm font-medium">
+                    {profile?.user?.point?.totalPoint
+                      ? profile.user.point.totalPoint.toLocaleString()
+                      : 0}{" "}
+                    Points Expired
+                  </span>
+                ) : (
+                  <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                    {profile?.user?.point?.totalPoint
+                      ? profile.user.point.totalPoint.toLocaleString()
+                      : 0}{" "}
+                    Points
+                  </span>
+                )
+              }
+              
+            </div>
+
+            <div className="mt-2">
+              {
+                couponReff?.isExpired ? (
+                  <span className="px-3 py-1 bg-red-500 text-white cursor-not-allowed rounded-full text-sm font-medium">
+                    + {couponReff?.totalValue} IDR
+                    {" "} Coupon refferal Expired
+                  </span>
+                ): (
+                  <span className="px-3 py-1 bg-purple-100 text-purple-800 cursor-not-allowed rounded-full text-sm font-medium">
+                    + {couponReff?.totalValue} IDR
+                    {" "} Coupon refferal
+                  </span>
+                )
+              }
+              
             </div>
 
             <div className="p-5 flex w-full">
