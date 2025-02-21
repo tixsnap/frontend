@@ -204,8 +204,6 @@ const UserProfile = () => {
                   </div>
                 </div>
 
-                <div>{userLogged?.name}</div>
-
                 <div className="flex justify-between">
                   <div className="flex gap-2">
                     {/* <button className="h-[40px] px-8 rounded-xl border flex items-center gap-2 text-sm hover:bg-blue-300 hover:text-white">
@@ -260,6 +258,9 @@ const UserProfile = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Created
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Review
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -302,6 +303,14 @@ const UserProfile = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {new Date(transaction?.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <button
+                        type="submit"
+                        className="h-[40px] px-8 rounded-xl  border items-center gap-2 text-sm bg-yellow-300 text-black hover:bg-yellow-600"
+                      >
+                        Review
+                      </button>
                     </td>
                   </tr>
                 ))}

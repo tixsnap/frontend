@@ -1,63 +1,29 @@
 "use client";
 import { useEventStore } from "@/app/store/eventStore";
 import axiosInstance from "@/app/utils/axios.helper";
+import axios from "axios";
 import Popup from "@/components/Popup";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CiImageOn } from "react-icons/ci";
 import { toast } from "react-toastify";
+import { Router } from "express";
 
 const EventCreationPage = () => {
-  //   const [eventDetails, setEventDetails] = useState({
-  //     name: "",
-  //     description: "",
-  //     startDate: "",
-  //     endDate: "",
-  //     seats: "",
-  //     ticketType: "paid",
-  //     price: "",
-  //   });
-
-  //   const [voucher, setVoucher] = useState({
-  //     discount: "",
-  //     voucherStart: "",
-  //     voucherEnd: "",
-  //   });
-
-  //   const [showVoucherForm, setShowVoucherForm] = useState(false);
-
-  //   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //     const { name, value } = e.target;
-  //     setEventDetails((prev) => ({ ...prev, [name]: value }));
-  //   };
-
-  //   const handleVoucherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //     const { name, value } = e.target;
-  //     setVoucher((prev) => ({ ...prev, [name]: value }));
-  //   };
-
-  //   const handleGenerateVoucher = () => {
-  //     setShowVoucherForm(true);
-  //   };
-
-  //   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  //     e.preventDefault();
-  //     // handle form submission
-  //     // TODO: continue to API
-  //     console.log({ ...eventDetails, voucher });
-  //   };
-
-  //   const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-  //     const { name, value } = e.target;
-  //     setEventDetails((prev) => ({ ...prev, [name]: value }));
-  //   };
-
-  // GATOT
-
   const { getEvents, events } = useEventStore();
   const [file, setFile] = useState<File | null>(null);
-  const router = useRouter()
+  const router = useRouter();
+
+  // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM4MDczM2ExLWY2YTAtNGM2NS05NGY4LTM1OGNjNDY0MmEwYyIsInJvbGUiOiJPUkdBTklaRVIiLCJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwibmFtZSI6ImRpbmEiLCJyZWZlcnJhbCI6IlY5WkM0T1Q2OCIsImlhdCI6MTc0MDE0NDQ2OSwiZXhwIjoxNzQwMTQ4MDY5fQ.0YrtvWxDDCTbQCS-uFgvmj_1TdFYoliripJ6-4UV7gE
+  const token = localStorage.getItem(
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAxNTQ0OGNjLTQ4ZjQtNGU3Yy1iNTQ3LWMyOTVlNzVlZGE1ZSIsInJvbGUiOiJPUkdBTklaRVIiLCJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwibmFtZSI6Imhlcm1hbiIsInJlZmVycmFsIjoiODVRQjVHTTBLIiwiaWF0IjoxNzQwMTQ4NDQ3LCJleHAiOjE3NDAxNTIwNDd9.liEMckqurGHtJBvQPoGwaNQ6sNsS74KJds2774BMyz4"
+  );
+
+  axiosInstance.interceptors.request.use((config) => {
+    config.headers.Authorization = `Bearer ${token}`;
+    return config;
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -73,36 +39,31 @@ const EventCreationPage = () => {
     },
     onSubmit: async (values: any) => {
       try {
-
-        const formData = new FormData()
+        const formData = new FormData();
         for (const key in values) {
-            if (values[key] || values[key] === 0) {
-              formData.append(key, values[key]);
-            }
+          if (values[key] || values[key] === 0) {
+            formData.append(key, values[key]);
           }
-  
-          if (file) {
-            formData.append("image", file);
-          }
-  
-          const res = await axiosInstance.post(
-            `/organizer/events`,
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-          );
-  
-          setTimeout(() => {
-            toast.success("Event Created");
-            formik.resetForm()
-          }, 2000);
+        }
 
-          router.push("/organizer/events")
-  
-        
+        if (file) {
+          formData.append("image", file);
+        }
+
+        const res = await axiosInstance.post(`/organizer/events`, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        console.log("data:", res.data);
+
+        setTimeout(() => {
+          toast.success("Event Created");
+          formik.resetForm();
+        }, 2000);
+
+        router.push("/organizer/events");
       } catch (error) {
         toast.error("Error creating event");
         console.error(error);
@@ -111,11 +72,11 @@ const EventCreationPage = () => {
   });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        setFile(file);
-      }
-    };
+    const file = e.target.files?.[0];
+    if (file) {
+      setFile(file);
+    }
+  };
 
   return (
     <div className="ml-[210px] p-6 w-[calc(100%-210px)] min-h-screen bg-gray-50">
@@ -138,18 +99,18 @@ const EventCreationPage = () => {
               Event Details
             </h3>
             <div className="space-y-4">
-                <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2">
                 <label className="hover:cursor-pointer h-[40px] px-4 rounded-xl border flex items-center gap-2 text-sm hover:bg-blue-500 hover:text-white">
-                    <CiImageOn />
-                    {file ? file.name : "Choose Image"}
-                    <input
+                  <CiImageOn />
+                  {file ? file.name : "Choose Image"}
+                  <input
                     type="file"
                     accept="image/png, image/gif, image/jpeg"
                     className="hidden"
                     onChange={handleImageChange}
-                    />
+                  />
                 </label>
-                </div>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-1">
                   Name
@@ -300,69 +261,10 @@ const EventCreationPage = () => {
             )}
           </div>
 
-          {/* voucher section */}
-          {/* <div className="mb-8">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-700">Voucher</h3>
-              <button
-                type="button"
-                onClick={handleGenerateVoucher}
-                className="px-4 py-2 text-white rounded-md transition-transform: duration-200 hover:scale-110"
-                style={{ backgroundColor: "#FF2E63" }}
-              >
-                Generate Voucher
-              </button>
-            </div>
-
-            {showVoucherForm && (
-              <div className="space-y-4 bg-gray-50 p-4 rounded-md">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                      Discount Percentage
-                    </label>
-                    <input
-                      type="number"
-                      name="discount"
-                      value={voucher.discount}
-                      onChange={handleVoucherChange}
-                      className="w-full p-2 border rounded-md"
-                      min="0"
-                      max="100"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                      Voucher Start Date
-                    </label>
-                    <input
-                      type="datetime-local"
-                      name="voucherStart"
-                      value={voucher.voucherStart}
-                      onChange={handleVoucherChange}
-                      className="w-full p-2 border rounded-md"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                      Voucher End Date
-                    </label>
-                    <input
-                      type="datetime-local"
-                      name="voucherEnd"
-                      value={voucher.voucherEnd}
-                      onChange={handleVoucherChange}
-                      className="w-full p-2 border rounded-md"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-          </div> */}
-
           <button
             type="submit"
             className="w-full bg-teal-500 text-white py-2 px-4 rounded-md hover:bg-teal-600 transition-colors"
+            onClick={() => router.push("/organizer/new")}
           >
             Create Event
           </button>

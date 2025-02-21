@@ -15,7 +15,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ logo = "TixSnap" }) => {
   const navLinks: NavLink[] = [
     { title: "Schedule", href: "/schedule" },
-    { title: "Contact", href: "/contact" },
+    { title: "Organizer", href: "/organizer" },
   ];
 
   const { data: session } = useSession();
