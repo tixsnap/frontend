@@ -4,131 +4,110 @@ import { EventChartYearly, MostEventAttended, MostEventSold } from "@/components
 import React, { useEffect, useState } from "react";
 import { useUserStore } from "../store/userStore";
 import { useEventStore } from "../store/eventStore";
+import { useRouter } from "next/navigation";
+import { StatCard } from "@/components/event/Stats";
 
 export default function Page() {
-  const {user, getUserSession} = useUserStore()
-  const {events, getEvents, calculateTotals, totalTransaction, getTransactions, totalAttendee, totalTicketSold} = useEventStore()
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
+  const { user, getUserSession } = useUserStore();
+  const {
+    events,
+    getEvents,
+    totalTransaction,
+    getTransactions,
+    totalAttendee,
+    totalTicketSold,
+    calculateTotals,
+    transactions
+  } = useEventStore(); 
 
-  const handleYearChange = (event: any) => {
-    setSelectedYear(event.target.value);
-  }
+  const [filterType, setFilterType] = useState("yearly");
+  const router = useRouter();
+
+  const fetchEvents = async () => {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear().toString();
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+    const day = currentDate.getDate().toString().padStart(2, "0");
+
+    if (filterType === "yearly") {
+      await getEvents(undefined, year);
+      await getTransactions(undefined, year);
+    } else if (filterType === "monthly") {
+      await getEvents(undefined, year, month);
+      await getTransactions(undefined, year, month);
+    } else if (filterType === "day") {
+      await getEvents(undefined, year, month, day);
+      await getTransactions(undefined, year, month, day);
+    }
+
+    calculateTotals()
+  };
+
+  const fetchData = async () => {
+    await getUserSession();
+    await fetchEvents();
+    // await getTransactions();
+    calculateTotals();
+  };
 
   useEffect(() => {
-    getUserSession()
-    getEvents();
-    const fetchTransactions = async () => {
-      await getTransactions(); 
-      calculateTotals(); 
-  };
-  fetchTransactions();
+    fetchData();
   }, []);
+
+  useEffect(() => {
+    fetchEvents();
+  }, [filterType]);
 
   return (
     <div className="ml-[210px] p-6 w-[calc(100%-210px)] min-h-screen bg-gray-50">
       <div className="p-5 w-full min-h-screen flex flex-col gap-5">
-        <h1 className="text-2xl font-bold">Welcome Back, {user?.name}</h1>
-        <div className="grid grid-cols-4 gap-5 h-[150px]">
-          <div className="border bg-gray-50 rounded-lg p-5 shadow-md">
-            <p className="text-start">Events</p>
-            <p className="text-7xl text-black font-bold text-center font-serif">
-              {events.length > 0 ? events.length : 0}
-            </p>
-          </div>
-          <div className="border bg-gray-50 rounded-lg p-5 shadow-md">
-            <p className="text-start">Ticket Sold</p>
-            <p className="text-7xl text-black font-bold text-center font-serif">
-              {
-                totalTicketSold
-              }
-            </p>
-          </div>
-          <div className="border bg-gray-50 rounded-lg p-5 shadow-md">
-            <p className="text-start">Transactions</p>
-            <p className="text-7xl text-black font-bold text-center font-serif">
-              {
-                totalTransaction
-              }
-            </p>
-          </div>
-          <div className="border bg-gray-50 rounded-lg p-5 shadow-md">
-            <p className="text-start">Attendees</p>
-            <p className="text-7xl text-black font-bold text-center font-serif">
-              {
-                totalAttendee
-              }
-            </p>
-          </div>
+        <div className="flex justify-between">
+          <h1 className="text-2xl font-bold">Welcome Back, {user?.name}</h1>
+          <select
+            className="border bg-gray-100 p-2 rounded-lg hover:cursor-pointer"
+            onChange={(e) => setFilterType(e.target.value)}
+            value={filterType}
+          >
+            <option value="yearly">Yearly</option>
+            <option value="monthly">Monthly</option>
+            <option value="day">Daily</option>
+          </select>
         </div>
 
+        {/* Statistics Section */}
+        <div className="grid grid-cols-3 gap-5 min-h-[150px]">
+          <StatCard 
+            title="Total Revenue" 
+            value={`${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(transactions.reduce((sum, tx) => sum + tx.totalPayment, 0)).replace(",00", "")}`} 
+            className="flex items-center justify-center text-3xl pt-5"
+          />
+          <StatCard title="Events" value={events.length} className="text-5xl pt-3"/>
+          {/* <StatCard title="Ticket Sold" value={totalTicketSold} className="text-5xl pt-3"/> */}
+          <StatCard title="Transactions" value={totalTransaction} className="text-5xl pt-3"/>
+          {/* <StatCard title="Attendees" value={totalAttendee} className="text-7xl"/> */}
+        </div>
+
+        {/* Charts Section */}
         <div className="bg-gray-50 rounded-lg border min-h-screen p-5 shadow-md">
-          <div className="flex gap-5 justify-end p-2">
-            <div className="flex gap-1 text-sm">
-              <select className="border bg-gray-100 p-2 rounded-lg hover:cursor-pointer">
-                <option value="2020">2020</option>
-                <option value="2021">2021</option>
-                <option value="2022">2022</option>
-                <option value="2023">2023</option>
-                <option value="2024">2024</option>
-                <option value="2025">2025</option>
-                <option value="2026">2026</option>
-                <option value="2027">2027</option>
-                <option value="2028">2028</option>
-                <option value="2029">2029</option>
-                <option value="2030">2030</option>
-              </select>
-              <select className="border bg-gray-100 rounded-lg hover:cursor-pointer">
-                <option value="january">January</option>
-                <option value="february">February</option>
-                <option value="march">March</option>
-                <option value="april">April</option>
-                <option value="may">May</option>
-                <option value="june">June</option>
-                <option value="july">July</option>
-                <option value="august">August</option>
-                <option value="september">September</option>
-                <option value="october">October</option>
-                <option value="november">November</option>
-                <option value="december">December</option>
-              </select>
-              <select className="border bg-gray-100 rounded-lg hover:cursor-pointer">
-                <option value="sunday">Sunday</option>
-                <option value="monday">Monday</option>
-                <option value="tuesday">Tuesday</option>
-                <option value="wednesday">Wednesday</option>
-                <option value="thursday">Thursday</option>
-                <option value="friday">Friday</option>
-                <option value="saturday">Saturday</option>
-              </select>
+          <div className="py-5 flex flex-col gap-5">
+            {/* <EventChartYearly /> */}
+            <div className="grid grid-cols-2 gap-5">
+              {events.length > 0 && (
+                <MostEventSold
+                  key="most-event-sold-all-time"
+                  labels={events.map((el) => el.name)}
+                  dataset={events.map((el) => Number(el.ticketSold))}
+                />
+              )}
+              {events.length > 0 && (
+                <MostEventAttended
+                  key="most-event-attended-all-time"
+                  labels={events.map((el) => el.name)}
+                  dataset={events.map((el) => Number(el.totalAttendee))}
+                />
+              )}
             </div>
           </div>
-          <div className="py-5 flex flex-col gap-5">
-          <EventChartYearly/>
-
-          <div className="grid grid-cols-2 gap-5">
-            {
-              events.length > 0 &&
-              <MostEventSold
-                key="most-event-sold-all-time"
-                labels={events.map((el) => el.name)}
-                dataset={events.map((el) => Number(el.ticketSold))} 
-              />
-            }
-          
-          {
-              events.length > 0 &&
-              <MostEventAttended
-                key="most-event-attended-all-time"
-                labels={events.map((el) => el.name)}
-                dataset={events.map((el) => Number(el.totalAttendee))} 
-              />
-            }
-          </div>
-          {/* <EventChartMonthly/> */}
-          </div>
-
-
-          {/* chart */}
         </div>
       </div>
     </div>

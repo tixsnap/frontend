@@ -20,14 +20,14 @@ interface EventStore {
   transactionsHistory: ITransaction[] | [];
   reviews: IReviews[] | [];
   review: IReviews | null;
-  getEvents: (name?: string) => Promise<void>;
+  getEvents: (name?: string, year?: string, month?: string, day?: string) => Promise<void>;
   getVouchers: () => Promise<void>;
   getEventsUser: () => Promise<void>;
   getEventsByParams: (param: string) => Promise<void>;
   getEventBySlug: (slug: string) => Promise<void>;
   getEventBySlugUser: (slug: string) => Promise<void>;
   getAttendeeListByParams: (slug: string) => Promise<void>;
-  getTransactions: (name?: string) => Promise<void>;
+  getTransactions: (name?: string, year?: string, month?: string, day?: string) => Promise<void>;
   getTransactionsUser: () => Promise<void>;
   getTransactionsHistory: (name?: string) => Promise<void>;
   getReviews: () => Promise<void>;
@@ -42,18 +42,20 @@ export const useEventStore = create<EventStore>((set, get) => ({
   transactionsHistory: [],
   reviews: [],
   event: null,
+  review: null,
   totalTicketSold: 0,
   totalAttendee: 0,
   loading: false,
   totalTransaction: 0,
   userEvents: [],
 
-  getEvents: async (name?: string) => {
+  getEvents: async (name?: string, year?: string, month?: string, day?: string) => {
     set({ loading: true });
     try {
       const res = await axiosInstance.get("/organizer/events", {
-        params: { name },
+        params: { name, year, month, day },
       });
+      console.log(res.data)
       set({ events: res.data.data });
       get().calculateTotals();
     } catch (error) {
@@ -105,15 +107,29 @@ export const useEventStore = create<EventStore>((set, get) => ({
     }
   },
 
-  getTransactions: async (name?: string) => {
+  getTransactions: async (name?: string, year?: string, month?: string, day?: string) => {
     set({ loading: true });
     try {
       // base_url/tx?name=dangdut
-      const res = await axiosInstance.get("/tx?", {
+      const res = await axiosInstance.get("/tx", {
         params: {
-          name,
+          name, year, month, day
         },
       });
+      // const transactions = name ? res.data.filteredData : res.data.data;
+      set({ transactions: res.data.data });
+    } catch (error) {
+      console.log(error);
+      set({ transactions: [] });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  getTransactionsUser: async (name?: string) => {
+    set({ loading: true });
+    try {
+      const res = await axios.get("http://localhost:8080/usertx");
       const transactions = name ? res.data.filteredData : res.data.data;
       set({ transactions });
     } catch (error) {
@@ -183,6 +199,12 @@ export const useEventStore = create<EventStore>((set, get) => ({
       (sum, curr) => Number(sum) + Number(curr.totalAttendee),
       0
     );
+
+    console.log("total event", events)
+    console.log("total tx",totalTx)
+    console.log("total sold",totalSold)
+    console.log("total attende",totalAttendee)
+
     set({
       totalTicketSold: totalSold,
       totalAttendee: totalAttendee,
